@@ -5,13 +5,13 @@ fn main() {
         Digit(incremint::show::TWO),
         Digit(incremint::show::ZERO),
         Digit(incremint::show::TWO),
-        Digit(incremint::show::FIVE),
+        Digit(incremint::show::FOUR),
     ]);
     let next = Digits(vec![
         Digit(incremint::show::THREE),
         Digit(incremint::show::ZERO),
         Digit(incremint::show::TWO),
-        Digit(incremint::show::FIVE),
+        Digit(incremint::show::FOUR),
     ]);
     println!("{}", Incremint { prev, next });
 }
