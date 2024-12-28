@@ -20,6 +20,12 @@ impl TryFrom<usize> for Digit {
         }
     }
 }
+impl std::fmt::Display for Digit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let writer = super::write::Writer::new(self.clone(), 1);
+        write!(f, "{}", writer)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Digits(Vec<Digit>);
@@ -44,6 +50,12 @@ impl From<usize> for Digits {
         }
         digits.reverse();
         Self(digits)
+    }
+}
+impl std::fmt::Display for Digits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let writer = super::write::Writer::new(self.clone(), 1);
+        write!(f, "{}", writer)
     }
 }
 
