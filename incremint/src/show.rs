@@ -3,7 +3,7 @@ pub struct Digit(pub [[char; 4]; 6]);
 impl From<usize> for Digit {
     fn from(d: usize) -> Self {
         match d {
-            0..=9 => Digit(DIGITS[d]),
+            0..=9 => Digit(super::DIGITS[d]),
             _ => panic!(),
         }
     }
@@ -23,108 +23,6 @@ impl From<usize> for Digits {
         Digits(digits)
     }
 }
-
-pub const SPACE: [[char; 4]; 6] = [
-    [' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' '],
-];
-
-pub const ZERO: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┃', '┏', '┓', '┃'],
-    ['┃', '┃', '┃', '┃'],
-    ['┃', '┃', '┃', '┃'],
-    ['┃', '┗', '┛', '┃'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const ONE: [[char; 4]; 6] = [
-    [' ', '┏', '┓', ' '],
-    [' ', '┃', '┃', ' '],
-    [' ', '┃', '┃', ' '],
-    [' ', '┃', '┃', ' '],
-    [' ', '┃', '┃', ' '],
-    [' ', '┗', '┛', ' '],
-];
-
-pub const TWO: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┗', '━', '┓', '┃'],
-    ['┏', '━', '┛', '┃'],
-    ['┃', '┏', '━', '┛'],
-    ['┃', '┗', '━', '┓'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const THREE: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┗', '━', '┓', '┃'],
-    ['┏', '━', '┛', '┃'],
-    ['┗', '━', '┓', '┃'],
-    ['┏', '━', '┛', '┃'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const FOUR: [[char; 4]; 6] = [
-    ['┏', '┓', '┏', '┓'],
-    ['┃', '┃', '┃', '┃'],
-    ['┃', '┗', '┛', '┃'],
-    ['┗', '━', '┓', '┃'],
-    [' ', ' ', '┃', '┃'],
-    [' ', ' ', '┗', '┛'],
-];
-
-pub const FIVE: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┃', '┏', '━', '┛'],
-    ['┃', '┗', '━', '┓'],
-    ['┗', '━', '┓', '┃'],
-    ['┏', '━', '┛', '┃'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const SIX: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┃', '┏', '━', '┛'],
-    ['┃', '┗', '━', '┓'],
-    ['┃', '┏', '┓', '┃'],
-    ['┃', '┗', '┛', '┃'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const SEVEN: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┃', '┏', '┓', '┃'],
-    ['┗', '┛', '┃', '┃'],
-    [' ', ' ', '┃', '┃'],
-    [' ', ' ', '┃', '┃'],
-    [' ', ' ', '┗', '┛'],
-];
-
-pub const EIGHT: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┃', '┏', '┓', '┃'],
-    ['┃', '┗', '┛', '┃'],
-    ['┃', '┏', '┓', '┃'],
-    ['┃', '┗', '┛', '┃'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const NINE: [[char; 4]; 6] = [
-    ['┏', '━', '━', '┓'],
-    ['┃', '┏', '┓', '┃'],
-    ['┃', '┗', '┛', '┃'],
-    ['┗', '━', '┓', '┃'],
-    ['┏', '━', '┛', '┃'],
-    ['┗', '━', '━', '┛'],
-];
-
-pub const DIGITS: [[[char; 4]; 6]; 10] =
-    [ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE];
 
 impl std::fmt::Display for Digit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -153,7 +51,7 @@ impl std::fmt::Display for Digits {
 impl Digits {
     pub fn padding(&self, p: usize) -> Self {
         if p > self.0.len() {
-            let mut prefix = Digits(vec![Digit(SPACE); p - self.0.len()]);
+            let mut prefix = Digits(vec![Digit(super::SPACE); p - self.0.len()]);
             for d in &self.0 {
                 prefix.0.push(d.clone());
             }
@@ -175,7 +73,7 @@ impl std::fmt::Display for Incremint {
                 for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
                     if rp == rn {
                         for j in 0..4 {
-                            write!(f, "{}", SPACE[i + 2][j])?;
+                            write!(f, "{}", super::SPACE[i + 2][j])?;
                         }
                     } else {
                         for c in rn.0[i + 2] {
@@ -211,7 +109,7 @@ impl std::fmt::Display for Incremint {
                 for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
                     if rp == rn {
                         for j in 0..4 {
-                            write!(f, "{}", SPACE[i - 2][j])?;
+                            write!(f, "{}", super::SPACE[i - 2][j])?;
                         }
                     } else {
                         for c in rp.0[i - 4] {
