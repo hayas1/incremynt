@@ -2,7 +2,7 @@ use chrono::{Datelike, Local};
 use clap::Parser;
 use incremint::{digit::Digits, increment::Incremint};
 
-#[derive(Parser)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
     #[arg(short, long)]
     #[clap(default_value_t = Self::this_year())]
@@ -20,8 +20,9 @@ impl Cli {
     }
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-    let (prev, next) = (Digits::from(cli.prev), Digits::from(cli.next));
+    let (prev, next) = (Digits::try_from(cli.prev)?, Digits::try_from(cli.next)?);
     println!("{}", Incremint { prev, next });
+    Ok(())
 }

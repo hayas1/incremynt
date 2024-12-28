@@ -1,3 +1,4 @@
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Incremint {
     pub prev: super::digit::Digits,
     pub next: super::digit::Digits,

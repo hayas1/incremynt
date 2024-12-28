@@ -1,26 +1,28 @@
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Digit(pub [[char; 4]; 6]);
-impl From<usize> for Digit {
-    fn from(d: usize) -> Self {
+impl TryFrom<usize> for Digit {
+    type Error = super::error::Error;
+    fn try_from(d: usize) -> Result<Self, Self::Error> {
         match d {
-            0..=9 => Digit(super::DIGITS[d]),
-            _ => panic!(),
+            0..=9 => Ok(Digit(super::DIGITS[d])),
+            o => Err(super::error::Error::Overflow(o)),
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Digits(pub Vec<Digit>);
-impl From<usize> for Digits {
-    fn from(ds: usize) -> Self {
+impl TryFrom<usize> for Digits {
+    type Error = super::error::Error;
+    fn try_from(ds: usize) -> Result<Self, Self::Error> {
         let mut digits = Vec::new();
         let mut curr = ds;
         while curr > 0 {
-            digits.push(Digit::from(curr % 10));
+            digits.push(Digit::try_from(curr % 10)?);
             curr /= 10;
         }
         digits.reverse();
-        Digits(digits)
+        Ok(Digits(digits))
     }
 }
 
