@@ -1,8 +1,28 @@
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Digit(pub [[char; 4]; 6]);
+impl From<usize> for Digit {
+    fn from(d: usize) -> Self {
+        match d {
+            0..=9 => Digit(DIGITS[d]),
+            _ => panic!(),
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Digits(pub Vec<Digit>);
+impl From<usize> for Digits {
+    fn from(ds: usize) -> Self {
+        let mut digits = Vec::new();
+        let mut curr = ds;
+        while curr > 0 {
+            digits.push(Digit::from(curr % 10));
+            curr /= 10;
+        }
+        digits.reverse();
+        Digits(digits)
+    }
+}
 
 pub const SPACE: [[char; 4]; 6] = [
     [' ', ' ', ' ', ' '],
