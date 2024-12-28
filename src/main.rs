@@ -1,11 +1,12 @@
+use incremint::show::Show;
+
 fn main() {
-    for d in incremint::show::DIGIT {
-        println!(
-            "{}",
-            d.iter()
-                .map(|x| x.iter().collect())
-                .collect::<Vec<String>>()
-                .join("\n")
-        );
-    }
+    let mut stdout = std::io::stdout();
+    let year = vec![
+        incremint::show::TWO,
+        incremint::show::ZERO,
+        incremint::show::TWO,
+        incremint::show::FIVE,
+    ];
+    year.show(&mut stdout).unwrap();
 }
