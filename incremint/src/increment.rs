@@ -13,7 +13,7 @@ impl std::fmt::Display for Incremint {
                             write!(f, "{}", super::SPACE[i + 2][j])?;
                         }
                     } else {
-                        for c in rn.0[i + 2] {
+                        for c in rn[i + 2] {
                             write!(f, "{}", c)?;
                         }
                     }
@@ -22,10 +22,10 @@ impl std::fmt::Display for Incremint {
                 for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
                     if rp == rn {
                         for j in 0..4 {
-                            write!(f, "{}", rp.0[i - 1][j])?;
+                            write!(f, "{}", rp[i - 1][j])?;
                         }
                     } else {
-                        for c in rn.0[i + 2] {
+                        for c in rn[i + 2] {
                             write!(f, "{}", c)?;
                         }
                     }
@@ -34,10 +34,10 @@ impl std::fmt::Display for Incremint {
                 for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
                     if rp == rn {
                         for j in 0..4 {
-                            write!(f, "{}", rp.0[i - 1][j])?;
+                            write!(f, "{}", rp[i - 1][j])?;
                         }
                     } else {
-                        for c in rp.0[i - 4] {
+                        for c in rp[i - 4] {
                             write!(f, "{}", c)?;
                         }
                     }
@@ -49,7 +49,7 @@ impl std::fmt::Display for Incremint {
                             write!(f, "{}", super::SPACE[i - 2][j])?;
                         }
                     } else {
-                        for c in rp.0[i - 4] {
+                        for c in rp[i - 4] {
                             write!(f, "{}", c)?;
                         }
                     }
