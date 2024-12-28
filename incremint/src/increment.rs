@@ -7,7 +7,7 @@ impl std::fmt::Display for Incremint {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for i in 0..8 {
             if i < 1 {
-                for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
+                for (rp, rn) in self.prev.iter().zip(self.next.iter()) {
                     if rp == rn {
                         for j in 0..4 {
                             write!(f, "{}", super::SPACE[i + 2][j])?;
@@ -19,7 +19,7 @@ impl std::fmt::Display for Incremint {
                     }
                 }
             } else if i < 4 {
-                for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
+                for (rp, rn) in self.prev.iter().zip(self.next.iter()) {
                     if rp == rn {
                         for j in 0..4 {
                             write!(f, "{}", rp[i - 1][j])?;
@@ -31,7 +31,7 @@ impl std::fmt::Display for Incremint {
                     }
                 }
             } else if i < 7 {
-                for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
+                for (rp, rn) in self.prev.iter().zip(self.next.iter()) {
                     if rp == rn {
                         for j in 0..4 {
                             write!(f, "{}", rp[i - 1][j])?;
@@ -43,7 +43,7 @@ impl std::fmt::Display for Incremint {
                     }
                 }
             } else if i < 8 {
-                for (rp, rn) in self.prev.0.iter().zip(self.next.0.iter()) {
+                for (rp, rn) in self.prev.iter().zip(self.next.iter()) {
                     if rp == rn {
                         for j in 0..4 {
                             write!(f, "{}", super::SPACE[i - 2][j])?;
