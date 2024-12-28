@@ -1,4 +1,5 @@
-pub type Digit = [[char; 4]; 6];
+pub struct Digit(pub [[char; 4]; 6]);
+pub struct Digits(pub Vec<Digit>);
 
 pub const ZERO: [[char; 4]; 6] = [
     ['┏', '━', '━', '┓'],
@@ -93,29 +94,26 @@ pub const NINE: [[char; 4]; 6] = [
 pub const DIGITS: [[[char; 4]; 6]; 10] =
     [ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE];
 
-pub trait Show {
-    fn show<W: std::io::Write>(&self, w: &mut W) -> std::io::Result<()>;
-}
-impl Show for Digit {
-    fn show<W: std::io::Write>(&self, w: &mut W) -> std::io::Result<()> {
-        for row in self {
+impl std::fmt::Display for Digit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for row in self.0 {
             for c in row {
-                write!(w, "{}", c)?;
+                write!(f, "{}", c)?;
             }
-            writeln!(w)?;
+            writeln!(f)?;
         }
         Ok(())
     }
 }
-impl Show for Vec<Digit> {
-    fn show<W: std::io::Write>(&self, w: &mut W) -> std::io::Result<()> {
+impl std::fmt::Display for Digits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for i in 0..6 {
-            for row in self {
-                for c in row[i] {
-                    write!(w, "{}", c)?;
+            for row in &self.0 {
+                for c in row.0[i] {
+                    write!(f, "{}", c)?;
                 }
             }
-            writeln!(w)?;
+            writeln!(f)?;
         }
         Ok(())
     }

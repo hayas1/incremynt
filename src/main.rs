@@ -1,12 +1,11 @@
-use incremint::show::Show;
+use incremint::show::{Digit, Digits};
 
 fn main() {
-    let mut stdout = std::io::stdout();
-    let year = vec![
-        incremint::show::TWO,
-        incremint::show::ZERO,
-        incremint::show::TWO,
-        incremint::show::FIVE,
-    ];
-    year.show(&mut stdout).unwrap();
+    let year = Digits(vec![
+        Digit(incremint::show::TWO),
+        Digit(incremint::show::ZERO),
+        Digit(incremint::show::TWO),
+        Digit(incremint::show::FIVE),
+    ]);
+    println!("{}", year);
 }
