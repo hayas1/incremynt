@@ -1,4 +1,4 @@
-use incremint::show::{Digits, Incremint};
+use incremint::{digit::Digits, increment::Incremint};
 
 fn main() {
     let prev = Digits::from(2024);
