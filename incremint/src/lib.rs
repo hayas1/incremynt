@@ -1,6 +1,7 @@
 pub mod digit;
 pub mod error;
 pub mod increment;
+pub mod write;
 
 pub const DIGITS: [[[char; 4]; 6]; 10] =
     [ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE];

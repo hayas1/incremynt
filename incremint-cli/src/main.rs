@@ -10,6 +10,9 @@ pub struct Cli {
     #[arg(short, long)]
     #[clap(default_value_t = Self::next_year())]
     next: usize,
+    #[arg(short, long)]
+    #[clap(default_value_t = 1)]
+    scale: usize,
 }
 impl Cli {
     pub fn this_year() -> usize {
