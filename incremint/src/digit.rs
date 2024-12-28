@@ -1,48 +1,52 @@
-pub type Digit = [[char; 4]; 6];
-pub trait TryIntoDigit {
-    type Error;
-    fn try_into_digit(self) -> Result<Digit, Self::Error>;
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+pub struct Digit([[char; 4]; 6]);
+impl std::ops::Deref for Digit {
+    type Target = [[char; 4]; 6];
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
-impl<T: Into<usize>> TryIntoDigit for T {
+impl std::ops::DerefMut for Digit {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl TryFrom<usize> for Digit {
     type Error = super::error::Error;
-    fn try_into_digit(self) -> Result<Digit, Self::Error> {
-        match self.into() {
-            d @ 0..=9 => Ok(super::DIGITS[d]),
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        match value {
+            d @ 0..=9 => Ok(Self(super::DIGITS[d])),
             o => Err(super::error::Error::Overflow(o)),
         }
     }
 }
 
-pub type Digits = Vec<Digit>;
-pub trait IntoDigits {
-    fn into_digits(self) -> Digits;
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+pub struct Digits(Vec<Digit>);
+impl std::ops::Deref for Digits {
+    type Target = Vec<Digit>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
-impl<T: Into<usize>> IntoDigits for T {
-    fn into_digits(self) -> Digits {
+impl std::ops::DerefMut for Digits {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl From<usize> for Digits {
+    fn from(value: usize) -> Self {
         let mut digits = Vec::new();
-        let mut curr = self.into();
+        let mut curr = value;
         while curr > 0 {
-            digits.push(super::DIGITS[curr % 10]);
+            digits.push(Digit(super::DIGITS[curr % 10]));
             curr /= 10;
         }
         digits.reverse();
-        digits
+        Self(digits)
     }
 }
 
-// impl std::fmt::Display for Digits {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         for i in 0..6 {
-//             for row in &self.digits {
-//                 for c in row[i] {
-//                     write!(f, "{}", c)?;
-//                 }
-//             }
-//             writeln!(f)?;
-//         }
-//         Ok(())
-//     }
-// }
 // impl Digits {
 //     pub fn padding(&self, p: usize) -> Self {
 //         if p > self.digits.len() {
