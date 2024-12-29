@@ -1,2 +1,9 @@
 [workspace]
 members = ["incremynt", "incremynt-cli", "incremynt-ui"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["hayas1 <h4ystack@gmail.com>"]
+repository = "https://github.com/hayas1/incremynt"
+license = "MIT"
