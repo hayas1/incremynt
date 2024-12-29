@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_autoprops::autoprops;
 
-use crate::content::ApplicationMain;
+use crate::application::ApplicationMain;
 
 #[autoprops]
 #[function_component(Document)]
