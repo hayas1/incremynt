@@ -46,7 +46,7 @@ impl std::fmt::Display for Writer<super::digit::Digit> {
 
 impl std::fmt::Display for Writer<super::digit::Digits> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for i in 0..6 {
+        for i in 0..crate::ROWS {
             for digit in self.d.iter() {
                 for (j, &c) in digit[i].iter().enumerate() {
                     write!(f, "{}", self.space_scaled(c, (i, j)))?;
