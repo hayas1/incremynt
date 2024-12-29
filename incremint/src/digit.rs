@@ -44,6 +44,9 @@ impl From<usize> for Digits {
     fn from(value: usize) -> Self {
         let mut digits = Vec::new();
         let mut curr = value;
+        if curr == 0 {
+            digits.push(Digit(super::ZERO));
+        }
         while curr > 0 {
             digits.push(Digit(super::DIGITS[curr % 10]));
             curr /= 10;
@@ -66,5 +69,73 @@ impl Digits {
             std::mem::swap(self, &mut prefix);
             self.extend(prefix.0);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_digit_from_usize() {
+        assert_eq!(Digit::try_from(0).unwrap(), Digit(crate::ZERO));
+        assert_eq!(Digit::try_from(1).unwrap(), Digit(crate::ONE));
+        assert_eq!(Digit::try_from(2).unwrap(), Digit(crate::TWO));
+        assert_eq!(Digit::try_from(3).unwrap(), Digit(crate::THREE));
+        assert_eq!(Digit::try_from(4).unwrap(), Digit(crate::FOUR));
+        assert_eq!(Digit::try_from(5).unwrap(), Digit(crate::FIVE));
+        assert_eq!(Digit::try_from(6).unwrap(), Digit(crate::SIX));
+        assert_eq!(Digit::try_from(7).unwrap(), Digit(crate::SEVEN));
+        assert_eq!(Digit::try_from(8).unwrap(), Digit(crate::EIGHT));
+        assert_eq!(Digit::try_from(9).unwrap(), Digit(crate::NINE));
+
+        assert!(matches!(
+            Digit::try_from(10).unwrap_err(),
+            crate::error::Error::Overflow(10)
+        ));
+        assert!(matches!(
+            Digit::try_from(100).unwrap_err(),
+            crate::error::Error::Overflow(100)
+        ));
+        assert!(matches!(
+            Digit::try_from(1000).unwrap_err(),
+            crate::error::Error::Overflow(1000)
+        ));
+    }
+
+    #[test]
+    fn test_digits_from_usize() {
+        assert_eq!(Digits::from(0), Digits(vec![Digit(crate::ZERO)]));
+        assert_eq!(Digits::from(1), Digits(vec![Digit(crate::ONE)]));
+        assert_eq!(Digits::from(2), Digits(vec![Digit(crate::TWO)]));
+        assert_eq!(Digits::from(3), Digits(vec![Digit(crate::THREE)]));
+        assert_eq!(Digits::from(4), Digits(vec![Digit(crate::FOUR)]));
+        assert_eq!(Digits::from(5), Digits(vec![Digit(crate::FIVE)]));
+        assert_eq!(Digits::from(6), Digits(vec![Digit(crate::SIX)]));
+        assert_eq!(Digits::from(7), Digits(vec![Digit(crate::SEVEN)]));
+        assert_eq!(Digits::from(8), Digits(vec![Digit(crate::EIGHT)]));
+        assert_eq!(Digits::from(9), Digits(vec![Digit(crate::NINE)]));
+
+        assert_eq!(
+            Digits::from(10),
+            Digits(vec![Digit(crate::ONE), Digit(crate::ZERO)])
+        );
+        assert_eq!(
+            Digits::from(100),
+            Digits(vec![
+                Digit(crate::ONE),
+                Digit(crate::ZERO),
+                Digit(crate::ZERO)
+            ])
+        );
+        assert_eq!(
+            Digits::from(1000),
+            Digits(vec![
+                Digit(crate::ONE),
+                Digit(crate::ZERO),
+                Digit(crate::ZERO),
+                Digit(crate::ZERO)
+            ])
+        );
     }
 }
