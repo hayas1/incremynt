@@ -73,20 +73,20 @@ pub fn application_form(value_handler: &UseStateHandle<Interface>) -> HtmlResult
     Ok(html! {
         <div class="flex flex-col">
             <div class="flex justify-center pt-4">
-                <div class="flex-initial mx-2"> <UsizeForm label="prev" value_handler={prev.clone()} /> </div>
-                <div class="flex-initial mx-2"> <UsizeForm label="next" value_handler={next.clone()} /> </div>
+                <div class="flex-initial mx-2"> <UsizeInput label="prev" value_handler={prev.clone()} /> </div>
+                <div class="flex-initial mx-2"> <UsizeInput label="next" value_handler={next.clone()} /> </div>
             </div>
             <div class="flex justify-center pt-4">
-                <div class="flex-initial mx-2"> <WidthChoiceForm label="space" value_handler={space.clone()} /> </div>
-                <div class="flex-initial mx-2"> <UsizeForm label="scale" value_handler={scale.clone()} /> </div>
+                <div class="flex-initial mx-2"> <WidthSelect label="space" value_handler={space.clone()} /> </div>
+                <div class="flex-initial mx-2"> <UsizeInput label="scale" value_handler={scale.clone()} /> </div>
             </div>
         </div>
     })
 }
 
 #[autoprops]
-#[function_component(UsizeForm)]
-pub fn usize_form(label: &String, value_handler: &UseStateHandle<usize>) -> HtmlResult {
+#[function_component(UsizeInput)]
+pub fn usize_input(label: &String, value_handler: &UseStateHandle<usize>) -> HtmlResult {
     let onchange = {
         let value_handler = value_handler.clone();
         Callback::from(move |e: Event| {
@@ -115,8 +115,8 @@ pub fn usize_form(label: &String, value_handler: &UseStateHandle<usize>) -> Html
 }
 
 #[autoprops]
-#[function_component(WidthChoiceForm)]
-pub fn width_choice_form(label: &String, value_handler: &UseStateHandle<Width>) -> HtmlResult {
+#[function_component(WidthSelect)]
+pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> HtmlResult {
     let onchange = {
         let value_handler = value_handler.clone();
         Callback::from(move |e: Event| {
