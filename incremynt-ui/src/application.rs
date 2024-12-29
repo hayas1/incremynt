@@ -95,13 +95,13 @@ pub fn application_form(value_handler: &UseStateHandle<Interface>) -> HtmlResult
     });
     Ok(html! {
         <div class="flex flex-col">
-            <div class="flex justify-center pt-4">
-                <div class="flex-initial mx-2"> <UsizeInput label="prev" value_handler={prev.clone()} /> </div>
-                <div class="flex-initial mx-2"> <UsizeInput label="next" value_handler={next.clone()} /> </div>
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full"> <UsizeInput label="prev" value_handler={prev.clone()} /> </div>
+                <div class="flex-initial px-4 w-full"> <UsizeInput label="next" value_handler={next.clone()} /> </div>
             </div>
-            <div class="flex justify-center pt-4">
-                <div class="flex-initial mx-2"> <WidthSelect label="space" value_handler={space.clone()} /> </div>
-                <div class="flex-initial mx-2"> <UsizeInput label="scale" value_handler={scale.clone()} /> </div>
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full"> <WidthSelect label="space" value_handler={space.clone()} /> </div>
+                <div class="flex-initial px-4 w-full"> <UsizeInput label="scale" value_handler={scale.clone()} /> </div>
             </div>
         </div>
     })
@@ -127,10 +127,10 @@ pub fn usize_input(label: &String, value_handler: &UseStateHandle<usize>) -> Htm
     let input_id = format!("input-int-{}", label);
 
     Ok(html! {
-        <div class="flex items-center border-b border-slate-500 px-2">
+        <div class="flex items-center border-b border-slate-500">
             <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
             <input type="number" id={input_id.clone()} value={initial.to_string()} min="0" onchange={onchange}
-                class="border-none rounded-sm bg-transparent text-center text-slate-900 dark:text-slate-50 leading-tight
+                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             />
         </div>
@@ -161,11 +161,10 @@ pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> Ht
     let select_id = format!("select-width-{}", label);
 
     Ok(html! {
-        <div class="flex items-center border-b border-slate-500 px-2 ">
+        <div class="flex items-center border-b border-slate-500">
             <label for={select_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
             <select id={select_id.clone()} onchange={onchange}
-                // TODO mx-12
-                class="border-none rounded-sm mx-12 bg-transparent text-center text-slate-900 dark:text-slate-50 leading-tight
+                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             >
                 // TODO selected
