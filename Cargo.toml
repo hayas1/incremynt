@@ -1,2 +1,2 @@
 [workspace]
-members = ["incremint", "incremint-cli", "incremint-ui"]
+members = ["incremynt", "incremynt-cli", "incremynt-ui"]

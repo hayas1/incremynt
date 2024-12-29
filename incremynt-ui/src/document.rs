@@ -22,7 +22,7 @@ pub fn header() -> HtmlResult {
         <header class="sticky top-0 shadow text-slate-900 bg-slate-100 dark:text-slate-100 dark:bg-slate-900">
             <nav class="flex justify-between items-center p-2">
                 <div class="flex items-center">
-                    <h1>{ "Incremint" }</h1>
+                    <h1>{ "incremynt" }</h1>
                 </div>
             </nav>
         </header>

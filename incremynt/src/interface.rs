@@ -14,7 +14,7 @@ impl Application<crate::digit::Digits> {
         write!(w, "{}", self.d.writer(self.space.into(), self.scale))
     }
 }
-impl Application<crate::increment::Incremint> {
+impl Application<crate::increment::Incremynt> {
     pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
         write!(w, "{}", self.d.writer(self.space.into(), self.scale))
     }
@@ -22,14 +22,14 @@ impl Application<crate::increment::Incremint> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{increment::Incremint, space::Width};
+    use crate::{increment::Incremynt, space::Width};
 
     use super::*;
 
     #[test]
     fn test_basic_application() {
-        let program = Application::<Incremint> {
-            d: Incremint::new(2024.into(), 3024.into()),
+        let program = Application::<Incremynt> {
+            d: Incremynt::new(2024.into(), 3024.into()),
             space: Width::Full,
             scale: 1,
         };

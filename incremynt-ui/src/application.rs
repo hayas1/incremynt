@@ -1,5 +1,5 @@
 use chrono::{Datelike, Local};
-use incremint::{increment::Incremint, interface::Application, space::Width};
+use incremynt::{increment::Incremynt, interface::Application, space::Width};
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 use yew_autoprops::autoprops;
@@ -12,9 +12,9 @@ pub struct Interface {
     space: Width,
     scale: usize,
 }
-impl From<Interface> for Application<Incremint> {
+impl From<Interface> for Application<Incremynt> {
     fn from(interface: Interface) -> Self {
-        Application::<Incremint> {
+        Application::<Incremynt> {
             d: (interface.prev, interface.next).into(),
             space: interface.space.into(),
             scale: interface.scale,

@@ -31,7 +31,7 @@ jobs:
     - name: Release test
       run: cargo test --release
     - name: Build App
-      run: yes | PUBLIC_URL="/${{ github.event.repository.name }}" ./incremint-ui/scripts/prod-build.sh
+      run: yes | PUBLIC_URL="/${{ github.event.repository.name }}" ./incremynt-ui/scripts/prod-build.sh
     # - name: Overwrite 404.html for Router
     #   run: cp target/public/index.html target/public/404.html
     - name: Upload artifact
@@ -78,7 +78,7 @@ jobs:
           ${{ steps.cargo-home.outputs.path }}
         key: cargo-${{ hashFiles('**/Cargo.toml') }}
     - name: Release build
-      run: cargo build --release --bin incremint-cli
+      run: cargo build --release --bin incremynt-cli
     - name: Push tag
       run: |
         git tag ${{ needs.build.outputs.expected-git-tag }}
@@ -98,6 +98,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./target/release/incremint-cli
-        asset_name: incremint-cli
+        asset_path: ./target/release/incremynt-cli
+        asset_name: incremynt-cli
         asset_content_type: application/octet-stream

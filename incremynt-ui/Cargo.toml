@@ -1,10 +1,10 @@
 [package]
-name = "incremint-ui"
+name = "incremynt-ui"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-incremint = { path = "../incremint" }
+incremynt = { path = "../incremynt" }
 
 chrono = "0.4.39"
 gloo-console = "0.3.0"

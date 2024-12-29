@@ -2,7 +2,7 @@ use std::io::Write;
 
 use chrono::{Datelike, Local};
 use clap::{Parser, ValueEnum};
-use incremint::{increment::Incremint, interface::Application, space::Width};
+use incremynt::{increment::Incremynt, interface::Application, space::Width};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
@@ -26,9 +26,9 @@ pub struct Cli {
     #[clap(default_value_t = 1)]
     scale: usize,
 }
-impl From<Cli> for Application<Incremint> {
+impl From<Cli> for Application<Incremynt> {
     fn from(cli: Cli) -> Self {
-        Application::<Incremint> {
+        Application::<Incremynt> {
             d: (cli.prev, cli.next).into(),
             space: cli.space.into(),
             scale: cli.scale,
@@ -57,7 +57,7 @@ impl Cli {
         cli.run(&mut std::io::stdout().lock())
     }
     pub fn run<W: Write>(self, w: &mut W) -> anyhow::Result<()> {
-        Ok(Application::<Incremint>::from(self).run(w)?)
+        Ok(Application::<Incremynt>::from(self).run(w)?)
     }
     pub fn this_year() -> usize {
         Local::now().year() as usize
@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn test_cli_behavior() {
-        let cli = Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024"]).unwrap();
+        let cli = Cli::try_parse_from(["incremynt", "-p", "2024", "-n", "3024"]).unwrap();
 
         assert_eq!(
             cli,
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_cli_empty_arg() {
-        let cli = Cli::try_parse_from(["incremint"]).unwrap();
+        let cli = Cli::try_parse_from(["incremynt"]).unwrap();
         assert!(cli.run(&mut std::io::empty()).is_ok());
     }
 }

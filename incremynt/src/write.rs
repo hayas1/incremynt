@@ -55,12 +55,12 @@ impl<'a> std::fmt::Display for DigitsWriter<'a, super::digit::Digits> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct IncremintWriter<'a> {
-    inner: DigitsWriter<'a, super::increment::Incremint>,
+pub struct IncremyntWriter<'a> {
+    inner: DigitsWriter<'a, super::increment::Incremynt>,
 }
-impl<'a> IncremintWriter<'a> {
+impl<'a> IncremyntWriter<'a> {
     pub fn new(
-        d: &'a super::increment::Incremint,
+        d: &'a super::increment::Incremynt,
         space_width: super::space::Width,
         scale: usize,
     ) -> Self {
@@ -102,7 +102,7 @@ impl<'a> IncremintWriter<'a> {
         }
     }
 }
-impl<'a> std::fmt::Display for IncremintWriter<'a> {
+impl<'a> std::fmt::Display for IncremyntWriter<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let inner = &self.inner;
         for row in 0..(crate::ROWS + 2) {
