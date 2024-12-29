@@ -55,8 +55,7 @@ impl std::ops::DerefMut for Digits {
 }
 impl From<usize> for Digits {
     fn from(value: usize) -> Self {
-        let mut digits = Vec::new();
-        let mut curr = value;
+        let (mut digits, mut curr) = (Vec::new(), value);
         if curr == 0 {
             digits.push(Digit(super::ZERO));
         }
