@@ -1,5 +1,5 @@
 use incremint::{increment::Incremint, interface::Application, space::Width};
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 use yew_autoprops::autoprops;
 
@@ -91,7 +91,7 @@ pub fn usize_input(label: &String, value_handler: &UseStateHandle<usize>) -> Htm
         let value_handler = value_handler.clone();
         Callback::from(move |e: Event| {
             let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
-                return gloo_console::error!("target is not HtmlInputElement");
+                return gloo_console::error!("application dom may be changed");
             };
             let Ok(value) = input.value().parse() else {
                 return gloo_console::error!("fail to parse value");
@@ -120,8 +120,8 @@ pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> Ht
     let onchange = {
         let value_handler = value_handler.clone();
         Callback::from(move |e: Event| {
-            let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
-                return gloo_console::error!("target is not HtmlInputElement");
+            let Some(input): Option<HtmlSelectElement> = e.target_dyn_into() else {
+                return gloo_console::error!("application dom may be changed");
             };
             let Ok(value) = input.value().parse() else {
                 return gloo_console::error!("fail to parse value");
