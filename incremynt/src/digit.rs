@@ -22,7 +22,14 @@ impl TryFrom<usize> for Digit {
 }
 impl std::fmt::Display for Digit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use super::write::Writable;
         write!(f, "{}", self.writer(super::space::Width::Half, 1))
+    }
+}
+impl<'a> super::write::Writable<'a> for Digit {
+    type Writer = super::write::DigitsWriter<'a, Self>;
+    fn writer(&'a self, space: super::space::Width, scale: usize) -> Self::Writer {
+        super::write::DigitsWriter::new(self, space, scale)
     }
 }
 impl Digit {
@@ -37,14 +44,6 @@ impl Digit {
     pub const SEVEN: Self = Self(crate::SEVEN);
     pub const EIGHT: Self = Self(crate::EIGHT);
     pub const NINE: Self = Self(crate::NINE);
-
-    pub fn writer(
-        &self,
-        space: super::space::Width,
-        scale: usize,
-    ) -> super::write::DigitsWriter<Self> {
-        super::write::DigitsWriter::new(self, space, scale)
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
@@ -76,7 +75,14 @@ impl From<usize> for Digits {
 }
 impl std::fmt::Display for Digits {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use super::write::Writable;
         write!(f, "{}", self.writer(super::space::Width::Half, 1))
+    }
+}
+impl<'a> super::write::Writable<'a> for Digits {
+    type Writer = super::write::DigitsWriter<'a, Self>;
+    fn writer(&self, space: super::space::Width, scale: usize) -> super::write::DigitsWriter<Self> {
+        super::write::DigitsWriter::new(self, space, scale)
     }
 }
 impl Digits {
@@ -86,13 +92,6 @@ impl Digits {
             std::mem::swap(self, &mut prefix);
             self.extend(prefix.0);
         }
-    }
-    pub fn writer(
-        &self,
-        space: super::space::Width,
-        scale: usize,
-    ) -> super::write::DigitsWriter<Self> {
-        super::write::DigitsWriter::new(self, space, scale)
     }
 }
 

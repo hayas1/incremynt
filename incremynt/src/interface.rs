@@ -4,19 +4,16 @@ pub struct Application<D> {
     pub space: super::space::Width,
     pub scale: usize,
 }
-impl Application<crate::digit::Digit> {
-    pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
-        write!(w, "{}", self.d.writer(self.space.into(), self.scale))
-    }
-}
-impl Application<crate::digit::Digits> {
-    pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
-        write!(w, "{}", self.d.writer(self.space.into(), self.scale))
-    }
-}
-impl Application<crate::increment::Incremynt> {
-    pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
-        write!(w, "{}", self.d.writer(self.space.into(), self.scale))
+impl<D> Application<D> {
+    pub fn run<'a, W>(&'a self, w: &mut W) -> std::io::Result<()>
+    where
+        D: super::write::Writable<'a>,
+        D::Writer: std::fmt::Display,
+        W: std::io::Write,
+    {
+        let Self { d, space, scale } = self;
+        let writer = d.writer(space.clone(), *scale);
+        write!(w, "{}", writer)
     }
 }
 

@@ -1,3 +1,8 @@
+pub trait Writable<'a> {
+    type Writer;
+    fn writer(&'a self, space: super::space::Width, scale: usize) -> Self::Writer;
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DigitsWriter<'a, D> {
     d: &'a D,

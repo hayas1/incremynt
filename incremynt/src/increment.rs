@@ -10,7 +10,14 @@ impl From<(usize, usize)> for Incremynt {
 }
 impl std::fmt::Display for Incremynt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use super::write::Writable;
         write!(f, "{}", self.writer(super::space::Width::Half, 1))
+    }
+}
+impl<'a> super::write::Writable<'a> for Incremynt {
+    type Writer = super::write::IncremyntWriter<'a>;
+    fn writer(&'a self, space: super::space::Width, scale: usize) -> Self::Writer {
+        super::write::IncremyntWriter::new(self, space, scale)
     }
 }
 impl Incremynt {
@@ -19,13 +26,6 @@ impl Incremynt {
         prev.padding(super::digit::Digit::ZERO, len);
         next.padding(super::digit::Digit::ZERO, len);
         Self { prev, next }
-    }
-    pub fn writer(
-        &self,
-        space: super::space::Width,
-        scale: usize,
-    ) -> super::write::IncremyntWriter {
-        super::write::IncremyntWriter::new(self, space, scale)
     }
 }
 
