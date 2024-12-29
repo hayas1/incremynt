@@ -12,11 +12,11 @@ impl std::ops::DerefMut for Digit {
     }
 }
 impl TryFrom<usize> for Digit {
-    type Error = super::error::Error;
+    type Error = crate::error::Error;
     fn try_from(value: usize) -> Result<Self, Self::Error> {
         match value {
             d @ 0..=9 => Ok(Self(super::DIGITS[d])),
-            o => Err(super::error::Error::Overflow(o)),
+            o => Err(crate::error::Error::Overflow(o)),
         }
     }
 }
