@@ -68,7 +68,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_cli() {
+    fn test_cli_behavior() {
         let cli = Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024"]).unwrap();
 
         assert_eq!(
@@ -98,5 +98,11 @@ mod tests {
             ]
             .join("\n")
         );
+    }
+
+    #[test]
+    fn test_cli_empty_arg() {
+        let cli = Cli::try_parse_from(["incremint"]).unwrap();
+        assert!(cli.run(&mut std::io::empty()).is_ok());
     }
 }
