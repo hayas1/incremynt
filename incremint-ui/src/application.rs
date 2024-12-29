@@ -4,6 +4,7 @@ use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 use yew_autoprops::autoprops;
 
+// TODO remove this struct ?
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Interface {
     prev: usize,
