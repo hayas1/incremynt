@@ -56,10 +56,7 @@ pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult
             let Some(window) = web_sys::window() else {
                 return gloo_console::error!("cannot get window");
             };
-            let promise = window
-                .navigator()
-                .clipboard()
-                .write_text(&copy);
+            let promise = window.navigator().clipboard().write_text(&copy);
             wasm_bindgen_futures::spawn_local(async move {
                 match wasm_bindgen_futures::JsFuture::from(promise).await {
                     Ok(_) => (),
@@ -76,7 +73,7 @@ pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult
                     text-slate-700 bg-white dark:text-slate-100 dark:bg-slate-700
                     hover:bg-slate-100 hover:dark:bg-slate-800"
             >
-                <pre>{ show }</pre>
+                <pre class="text-left">{ show }</pre>
             </button>
         </div>
     })
