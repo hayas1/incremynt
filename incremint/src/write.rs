@@ -1,19 +1,24 @@
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DigitsWriter<'a, D> {
     d: &'a D,
+    space_width: super::space::Width,
     scale: usize,
 }
 impl<'a, D> DigitsWriter<'a, D> {
-    pub fn new(d: &'a D, scale: usize) -> Self {
-        Self { d, scale }
+    pub fn new(d: &'a D, space_width: super::space::Width, scale: usize) -> Self {
+        Self {
+            d,
+            space_width,
+            scale,
+        }
     }
     pub fn space_scaled(&self, c: char) -> impl Iterator<Item = char> {
-        let rep = if c == crate::SPACE[0][0] {
-            self.scale
+        let (rep, s) = if c == crate::SPACE[0][0] {
+            (self.scale, self.space_width.space())
         } else {
-            1
+            (1, c)
         };
-        (0..rep).map(move |_| c)
+        (0..rep).map(move |_| s)
     }
     pub fn digit_row(
         &'a self,
@@ -54,9 +59,13 @@ pub struct IncremintWriter<'a> {
     inner: DigitsWriter<'a, super::increment::Incremint>,
 }
 impl<'a> IncremintWriter<'a> {
-    pub fn new(d: &'a super::increment::Incremint, scale: usize) -> Self {
+    pub fn new(
+        d: &'a super::increment::Incremint,
+        space_width: super::space::Width,
+        scale: usize,
+    ) -> Self {
         Self {
-            inner: DigitsWriter::new(d, scale),
+            inner: DigitsWriter::new(d, space_width, scale),
         }
     }
     pub fn write_chunk(

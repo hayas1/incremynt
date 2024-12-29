@@ -1,6 +1,7 @@
 pub mod digit;
 pub mod error;
 pub mod increment;
+pub mod space;
 pub mod write;
 
 pub const ROWS: usize = 6;
