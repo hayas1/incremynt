@@ -74,7 +74,6 @@ impl std::fmt::Display for Digits {
         write!(f, "{}", writer)
     }
 }
-
 impl Digits {
     pub fn padding(&mut self, pad: Digit, p: usize) {
         if p > self.len() {
