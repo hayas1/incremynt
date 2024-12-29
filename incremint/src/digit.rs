@@ -59,16 +59,12 @@ impl std::fmt::Display for Digits {
     }
 }
 
-// impl Digits {
-//     pub fn padding(&self, p: usize) -> Self {
-//         if p > self.digits.len() {
-//             let mut prefix = Self::new(vec![super::SPACE; p - self.digits.len()], self.scale);
-//             for d in &self.0 {
-//                 prefix.0.push(d.clone());
-//             }
-//             prefix
-//         } else {
-//             self.clone()
-//         }
-//     }
-// }
+impl Digits {
+    pub fn padding(&mut self, p: usize) {
+        if p > self.len() {
+            let mut prefix = Self(vec![Digit(super::SPACE); p - self.len()]);
+            std::mem::swap(self, &mut prefix);
+            self.extend(prefix.0);
+        }
+    }
+}
