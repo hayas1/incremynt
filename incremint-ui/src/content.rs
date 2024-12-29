@@ -62,16 +62,24 @@ pub fn application_form(value_handler: &UseStateHandle<Interface>) -> HtmlResult
     let initial = &*value_handler.clone();
     let prev = use_state(|| initial.prev);
     let next = use_state(|| initial.next);
+    let space = use_state(|| initial.space.clone());
+    let scale = use_state(|| initial.scale);
     value_handler.set(Interface {
         prev: *prev,
         next: *next,
-        space: Width::Full,
-        scale: 1,
+        space: (&*space).clone(),
+        scale: *scale,
     });
     Ok(html! {
-        <div class="flex justify-center pt-4">
-            <div class="flex-initial mx-2"> <UsizeForm label="prev" value_handler={prev.clone()} /> </div>
-            <div class="flex-initial mx-2"> <UsizeForm label="next" value_handler={next.clone()} /> </div>
+        <div class="flex flex-col">
+            <div class="flex justify-center pt-4">
+                <div class="flex-initial mx-2"> <UsizeForm label="prev" value_handler={prev.clone()} /> </div>
+                <div class="flex-initial mx-2"> <UsizeForm label="next" value_handler={next.clone()} /> </div>
+            </div>
+            <div class="flex justify-center pt-4">
+                <div class="flex-initial mx-2"> <WidthChoiceForm label="space" value_handler={space.clone()} /> </div>
+                <div class="flex-initial mx-2"> <UsizeForm label="scale" value_handler={scale.clone()} /> </div>
+            </div>
         </div>
     })
 }
@@ -98,10 +106,48 @@ pub fn usize_form(label: &String, value_handler: &UseStateHandle<usize>) -> Html
     Ok(html! {
         <div class="flex items-center border-b border-slate-500 px-2">
             <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
-            <input type="number" value={initial.to_string()} min="0" id={input_id.clone()} onchange={onchange}
+            <input type="number" id={input_id.clone()} value={initial.to_string()} min="0" onchange={onchange}
                 class="border-none rounded-sm bg-transparent text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             />
+        </div>
+    })
+}
+
+#[autoprops]
+#[function_component(WidthChoiceForm)]
+pub fn width_choice_form(label: &String, value_handler: &UseStateHandle<Width>) -> HtmlResult {
+    let onchange = {
+        let value_handler = value_handler.clone();
+        Callback::from(move |e: Event| {
+            let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
+                return gloo_console::error!("target is not HtmlInputElement");
+            };
+            let Ok(value) = input.value().parse() else {
+                return gloo_console::error!("fail to parse value");
+            };
+            value_handler.set(match value {
+                0 => Width::Full,
+                1 => Width::Half,
+                _ => unreachable!(),
+            });
+        })
+    };
+
+    // let initial = *value_handler.clone();
+    let select_id = format!("select-width-{}", label);
+
+    Ok(html! {
+        <div class="flex items-center border-b border-slate-500 px-2 ">
+            <label for={select_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
+            <select id={select_id.clone()} onchange={onchange}
+                // TODO mx-12
+                class="border-none rounded-sm mx-12 bg-transparent text-center text-slate-900 dark:text-slate-50 leading-tight
+                    focus:outline-none focus:shadow-outline appearance-none"
+            >
+                <option value="0" selected=true>{ "full" }</option>
+                <option value="1">{ "half" }</option>
+            </select>
         </div>
     })
 }
