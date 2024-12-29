@@ -90,7 +90,11 @@ impl std::fmt::Display for Writer<super::increment::Incremint> {
                 }
             } else if row < 7 {
                 for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
-                    let r = if dp == dn { row - 1 } else { row - 4 };
+                    let r = if dp == dn {
+                        row - 1
+                    } else {
+                        row + 2 - crate::ROWS
+                    };
                     for x in self.digit_row(dp, r) {
                         write!(f, "{}", x)?;
                     }
@@ -102,7 +106,7 @@ impl std::fmt::Display for Writer<super::increment::Incremint> {
                     } else {
                         dp
                     };
-                    for x in self.digit_row(d, row - 4) {
+                    for x in self.digit_row(d, row + 2 - crate::ROWS) {
                         write!(f, "{}", x)?;
                     }
                 }
