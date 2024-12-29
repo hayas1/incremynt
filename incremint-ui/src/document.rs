@@ -7,7 +7,7 @@ use crate::content::Content;
 #[function_component(Document)]
 pub fn document() -> HtmlResult {
     Ok(html! {
-        <body class="min-h-screen min-w-screen">
+        <body class="min-h-screen min-w-screen text-slate-900 bg-slate-50 dark:text-slate-50 dark:bg-slate-800">
             <Header />
             <Main />
             <Footer />
@@ -19,10 +19,12 @@ pub fn document() -> HtmlResult {
 #[function_component(Header)]
 pub fn header() -> HtmlResult {
     Ok(html! {
-        <header class="sticky top-0">
-            <div>
-                <h1>{ "Incremint" }</h1>
-            </div>
+        <header class="sticky top-0 shadow text-slate-900 bg-slate-100 dark:text-slate-100 dark:bg-slate-900">
+            <nav class="flex justify-between items-center p-2">
+                <div class="flex items-center">
+                    <h1>{ "Incremint" }</h1>
+                </div>
+            </nav>
         </header>
     })
 }
@@ -46,6 +48,7 @@ pub fn footer() -> HtmlResult {
                 { "Powered by " }
                 <a href="https://github.com/hayas1/"
                     target="_blank" rel="noopener noreferrer"
+                    class="underline"
                 >
                     { env!("CARGO_PKG_NAME") }
                 </a>
