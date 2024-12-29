@@ -145,6 +145,7 @@ pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> Ht
                 class="border-none rounded-sm mx-12 bg-transparent text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             >
+                // TODO selected
                 <option value="0" selected=true>{ "full" }</option>
                 <option value="1">{ "half" }</option>
             </select>
