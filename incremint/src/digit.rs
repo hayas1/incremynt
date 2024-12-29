@@ -26,6 +26,19 @@ impl std::fmt::Display for Digit {
         write!(f, "{}", writer)
     }
 }
+impl Digit {
+    pub const SPACE: Self = Self(crate::SPACE);
+    pub const ZERO: Self = Self(crate::ZERO);
+    pub const ONE: Self = Self(crate::ONE);
+    pub const TWO: Self = Self(crate::TWO);
+    pub const THREE: Self = Self(crate::THREE);
+    pub const FOUR: Self = Self(crate::FOUR);
+    pub const FIVE: Self = Self(crate::FIVE);
+    pub const SIX: Self = Self(crate::SIX);
+    pub const SEVEN: Self = Self(crate::SEVEN);
+    pub const EIGHT: Self = Self(crate::EIGHT);
+    pub const NINE: Self = Self(crate::NINE);
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Digits(Vec<Digit>);
@@ -63,9 +76,9 @@ impl std::fmt::Display for Digits {
 }
 
 impl Digits {
-    pub fn padding(&mut self, p: usize) {
+    pub fn padding(&mut self, pad: Digit, p: usize) {
         if p > self.len() {
-            let mut prefix = Self(vec![Digit(super::SPACE); p - self.len()]);
+            let mut prefix = Self(vec![pad; p - self.len()]);
             std::mem::swap(self, &mut prefix);
             self.extend(prefix.0);
         }
@@ -169,6 +182,57 @@ mod tests {
                 ┃┗━┓┃┗┛┃┃┗━┓┏━┛┃
                 ┗━━┛┗━━┛┗━━┛┗━━┛
             "}
+        );
+    }
+
+    #[test]
+    fn test_digits_padding() {
+        let mut digits = Digits::from(16);
+        assert_eq!(
+            digits.to_string(),
+            vec![
+                " ┏┓ ┏━━┓",
+                " ┃┃ ┃┏━┛",
+                " ┃┃ ┃┗━┓",
+                " ┃┃ ┃┏┓┃",
+                " ┃┃ ┃┗┛┃",
+                " ┗┛ ┗━━┛",
+                "",
+            ]
+            .join("\n")
+        );
+
+        digits.padding(Digit::SPACE, 4);
+        assert_eq!(
+            digits.to_string(),
+            vec![
+                "         ┏┓ ┏━━┓",
+                "         ┃┃ ┃┏━┛",
+                "         ┃┃ ┃┗━┓",
+                "         ┃┃ ┃┏┓┃",
+                "         ┃┃ ┃┗┛┃",
+                "         ┗┛ ┗━━┛",
+                "",
+            ]
+            .join("\n")
+        );
+
+        let mut luck = Digits::default();
+        assert_eq!(luck.to_string(), "\n\n\n\n\n\n");
+
+        luck.padding(Digit::SEVEN, 3);
+        assert_eq!(
+            luck.to_string(),
+            vec![
+                "┏━━┓┏━━┓┏━━┓",
+                "┃┏┓┃┃┏┓┃┃┏┓┃",
+                "┗┛┃┃┗┛┃┃┗┛┃┃",
+                "  ┃┃  ┃┃  ┃┃",
+                "  ┃┃  ┃┃  ┃┃",
+                "  ┗┛  ┗┛  ┗┛",
+                "",
+            ]
+            .join("\n")
         );
     }
 }
