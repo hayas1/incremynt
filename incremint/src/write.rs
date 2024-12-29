@@ -24,23 +24,6 @@ impl<D> DigitsWriter<D> {
         r.iter().flat_map(move |&c| self.space_scaled(c))
     }
 }
-
-// impl<D> std::fmt::Display for Writer<&D>
-// where
-//     Writer<D>: std::fmt::Display,
-// {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}", self)
-//     }
-// }
-// impl<D> std::fmt::Display for Writer<&mut D>
-// where
-//     Writer<D>: std::fmt::Display,
-// {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}", self)
-//     }
-// }
 impl std::fmt::Display for DigitsWriter<super::digit::Digit> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..crate::ROWS {
@@ -52,7 +35,6 @@ impl std::fmt::Display for DigitsWriter<super::digit::Digit> {
         Ok(())
     }
 }
-
 impl std::fmt::Display for DigitsWriter<super::digit::Digits> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..crate::ROWS {
@@ -66,18 +48,34 @@ impl std::fmt::Display for DigitsWriter<super::digit::Digits> {
         Ok(())
     }
 }
+// impl<D> std::fmt::Display for DigitsWriter<&D>
+// where
+//     DigitsWriter<D>: std::fmt::Display,
+// {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         write!(f, "{}", self)
+//     }
+// }
+// impl<D> std::fmt::Display for DigitsWriter<&mut D>
+// where
+//     DigitsWriter<D>: std::fmt::Display,
+// {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         write!(f, "{}", self)
+//     }
+// }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct IncremintWriter {
-    inner: DigitsWriter<super::increment::Incremint>,
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct IncremintWriter<'a> {
+    inner: DigitsWriter<&'a super::increment::Incremint>,
 }
-impl IncremintWriter {
-    pub fn new(d: super::increment::Incremint, scale: usize) -> Self {
+impl<'a> IncremintWriter<'a> {
+    pub fn new(d: &'a super::increment::Incremint, scale: usize) -> Self {
         Self {
             inner: DigitsWriter::new(d, scale),
         }
     }
-    pub fn write_chunk<'a>(
+    pub fn write_chunk(
         &'a self,
         (prev, next): (&'a super::digit::Digit, &'a super::digit::Digit),
         row: usize,
@@ -111,7 +109,7 @@ impl IncremintWriter {
         }
     }
 }
-impl std::fmt::Display for IncremintWriter {
+impl<'a> std::fmt::Display for IncremintWriter<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let inner = &self.inner;
         for row in 0..(crate::ROWS + 2) {
