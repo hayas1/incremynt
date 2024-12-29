@@ -2,7 +2,7 @@ use std::io::Write;
 
 use chrono::{Datelike, Local};
 use clap::{Parser, ValueEnum};
-use incremint::{interface::Application, space::Width};
+use incremint::{increment::Incremint, interface::Application, space::Width};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
@@ -26,11 +26,10 @@ pub struct Cli {
     #[clap(default_value_t = 1)]
     scale: usize,
 }
-impl Into<Application> for Cli {
-    fn into(self) -> Application {
-        Application {
-            prev: self.prev,
-            next: self.next,
+impl Into<Application<Incremint>> for Cli {
+    fn into(self) -> Application<Incremint> {
+        Application::<Incremint> {
+            d: Incremint::new(self.prev.into(), self.next.into()),
             space: self.space.into(),
             scale: self.scale,
         }
@@ -57,7 +56,7 @@ impl Cli {
         cli.run(&mut std::io::stdout().lock())
     }
     pub fn run<W: Write>(self, w: &mut W) -> anyhow::Result<()> {
-        Ok(<_ as Into<Application>>::into(self).run(w)?)
+        Ok(<_ as Into<Application<Incremint>>>::into(self).run(w)?)
     }
     pub fn this_year() -> usize {
         Local::now().year() as usize

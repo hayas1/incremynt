@@ -1,33 +1,35 @@
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct Application {
-    pub prev: usize,
-    pub next: usize,
+pub struct Application<D> {
+    pub d: D,
     pub space: super::space::Width,
     pub scale: usize,
 }
-impl Application {
+impl Application<crate::digit::Digit> {
     pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
-        let (prev, next) = (self.prev.into(), self.next.into());
-        write!(
-            w,
-            "{}",
-            super::increment::Incremint::new(prev, next).writer(self.space.into(), self.scale)
-        )?;
-        Ok(())
+        write!(w, "{}", self.d.writer(self.space.into(), self.scale))
+    }
+}
+impl Application<crate::digit::Digits> {
+    pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
+        write!(w, "{}", self.d.writer(self.space.into(), self.scale))
+    }
+}
+impl Application<crate::increment::Incremint> {
+    pub fn run<W: std::io::Write>(self, w: &mut W) -> std::io::Result<()> {
+        write!(w, "{}", self.d.writer(self.space.into(), self.scale))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::space::Width;
+    use crate::{increment::Incremint, space::Width};
 
     use super::*;
 
     #[test]
     fn test_basic_application() {
-        let program = Application {
-            prev: 2024,
-            next: 3024,
+        let program = Application::<Incremint> {
+            d: Incremint::new(2024.into(), 3024.into()),
             space: Width::Full,
             scale: 1,
         };
