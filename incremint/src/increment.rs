@@ -3,6 +3,11 @@ pub struct Incremint {
     pub prev: super::digit::Digits,
     pub next: super::digit::Digits,
 }
+impl From<(usize, usize)> for Incremint {
+    fn from((prev, next): (usize, usize)) -> Self {
+        Self::new(prev.into(), next.into())
+    }
+}
 impl std::fmt::Display for Incremint {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.writer(super::space::Width::Half, 1))
@@ -32,10 +37,7 @@ mod tests {
 
     #[test]
     fn test_incremint_display() {
-        let incremint = Incremint {
-            prev: Digits::from(2024),
-            next: Digits::from(3024),
-        };
+        let incremint = Incremint::new(Digits::from(2024), Digits::from(3024));
         assert_eq!(
             incremint.to_string(),
             vec![

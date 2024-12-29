@@ -29,7 +29,7 @@ pub struct Cli {
 impl Into<Application<Incremint>> for Cli {
     fn into(self) -> Application<Incremint> {
         Application::<Incremint> {
-            d: Incremint::new(self.prev.into(), self.next.into()),
+            d: (self.prev, self.next).into(),
             space: self.space.into(),
             scale: self.scale,
         }
