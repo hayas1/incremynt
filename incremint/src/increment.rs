@@ -9,3 +9,33 @@ impl std::fmt::Display for Incremint {
         write!(f, "{}", writer)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::digit::Digits;
+
+    use super::*;
+
+    #[test]
+    fn test_incremint_display() {
+        let incremint = Incremint {
+            prev: Digits::from(2024),
+            next: Digits::from(3024),
+        };
+        assert_eq!(
+            incremint.to_string(),
+            vec![
+                "┏━┛┃            ",
+                "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
+                "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
+                "┗━━┛┃┃┃┃┏━┛┃┃┗┛┃",
+                "┏━━┓┃┃┃┃┃┏━┛┗━┓┃",
+                "┗━┓┃┃┗┛┃┃┗━┓  ┃┃",
+                "┏━┛┃┗━━┛┗━━┛  ┗┛",
+                "┃┏━┛            ",
+                "",
+            ]
+            .join("\n")
+        );
+    }
+}
