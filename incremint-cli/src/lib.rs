@@ -26,24 +26,25 @@ pub struct Cli {
     #[clap(default_value_t = 1)]
     scale: usize,
 }
-impl Into<Application<Incremint>> for Cli {
-    fn into(self) -> Application<Incremint> {
+impl From<Cli> for Application<Incremint> {
+    fn from(cli: Cli) -> Self {
         Application::<Incremint> {
-            d: (self.prev, self.next).into(),
-            space: self.space.into(),
-            scale: self.scale,
+            d: (cli.prev, cli.next).into(),
+            space: cli.space.into(),
+            scale: cli.scale,
         }
     }
 }
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, ValueEnum)]
 pub enum SpaceWidth {
     #[default]
     Half,
     Full,
 }
-impl Into<Width> for SpaceWidth {
-    fn into(self) -> Width {
-        match self {
+impl From<SpaceWidth> for Width {
+    fn from(width: SpaceWidth) -> Self {
+        match width {
             SpaceWidth::Half => Width::Half,
             SpaceWidth::Full => Width::Full,
         }
@@ -56,7 +57,7 @@ impl Cli {
         cli.run(&mut std::io::stdout().lock())
     }
     pub fn run<W: Write>(self, w: &mut W) -> anyhow::Result<()> {
-        Ok(<_ as Into<Application<Incremint>>>::into(self).run(w)?)
+        Ok(Application::<Incremint>::from(self).run(w)?)
     }
     pub fn this_year() -> usize {
         Local::now().year() as usize
