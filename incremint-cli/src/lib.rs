@@ -4,12 +4,17 @@ use incremint::increment::Incremint;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
+    /// previous value of the increment
     #[arg(short, long)]
     #[clap(default_value_t = Self::this_year())]
     prev: usize,
+
+    /// next value of the increment
     #[arg(short, long)]
     #[clap(default_value_t = Self::next_year())]
     next: usize,
+
+    /// whitespace scale
     #[arg(short, long)]
     #[clap(default_value_t = 1)]
     scale: usize,
