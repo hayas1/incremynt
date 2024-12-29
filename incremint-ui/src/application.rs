@@ -48,12 +48,36 @@ pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult
     application
         .run(&mut buf)
         .unwrap_or_else(|e| gloo_console::error!(e.to_string()));
+    let show = String::from_utf8_lossy(&buf);
+
+    let onclick = {
+        let copy = show.to_string();
+        Callback::from(move |_| {
+            let Some(window) = web_sys::window() else {
+                return gloo_console::error!("cannot get window");
+            };
+            let promise = window
+                .navigator()
+                .clipboard()
+                .write_text(&copy);
+            wasm_bindgen_futures::spawn_local(async move {
+                match wasm_bindgen_futures::JsFuture::from(promise).await {
+                    Ok(_) => (),
+                    Err(e) => gloo_console::error!(e),
+                }
+            });
+        })
+    };
 
     Ok(html! {
-        <div class="h-[50vh] flex justify-center items-center">
-            <div class="rounded-2xl text-[4vh] text-slate-700 bg-white dark:text-slate-100 dark:bg-slate-700">
-                <pre>{ String::from_utf8_lossy(&buf) }</pre>
-            </div>
+        <div class="flex flex-col justify-center items-center">
+            <button onclick={onclick} title="copy"
+                class="h-[50vh] rounded-2xl text-[4vh]
+                    text-slate-700 bg-white dark:text-slate-100 dark:bg-slate-700
+                    hover:bg-slate-100 hover:dark:bg-slate-800"
+            >
+                <pre>{ show }</pre>
+            </button>
         </div>
     })
 }

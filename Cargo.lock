@@ -792,6 +792,7 @@ dependencies = [
  "chrono",
  "gloo-console 0.3.0",
  "incremint",
+ "wasm-bindgen-futures",
  "web-sys",
  "yew",
  "yew-autoprops",
