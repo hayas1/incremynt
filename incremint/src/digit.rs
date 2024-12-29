@@ -22,8 +22,7 @@ impl TryFrom<usize> for Digit {
 }
 impl std::fmt::Display for Digit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let writer = super::write::DigitsWriter::new(self.clone(), 1);
-        write!(f, "{}", writer)
+        write!(f, "{}", self.writer(1))
     }
 }
 impl Digit {
@@ -38,6 +37,10 @@ impl Digit {
     pub const SEVEN: Self = Self(crate::SEVEN);
     pub const EIGHT: Self = Self(crate::EIGHT);
     pub const NINE: Self = Self(crate::NINE);
+
+    pub fn writer(&self, scale: usize) -> super::write::DigitsWriter<Self> {
+        super::write::DigitsWriter::new(self.clone(), scale)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
@@ -69,8 +72,7 @@ impl From<usize> for Digits {
 }
 impl std::fmt::Display for Digits {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let writer = super::write::DigitsWriter::new(self.clone(), 1);
-        write!(f, "{}", writer)
+        write!(f, "{}", self.writer(1))
     }
 }
 impl Digits {
@@ -80,6 +82,9 @@ impl Digits {
             std::mem::swap(self, &mut prefix);
             self.extend(prefix.0);
         }
+    }
+    pub fn writer(&self, scale: usize) -> super::write::DigitsWriter<Self> {
+        super::write::DigitsWriter::new(self.clone(), scale)
     }
 }
 
