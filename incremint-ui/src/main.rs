@@ -1,5 +1,5 @@
-use incremint_ui::Main;
+use incremint_ui::Document;
 
 fn main() {
-    yew::Renderer::<Main>::new().render();
+    yew::Renderer::<Document>::new().render();
 }

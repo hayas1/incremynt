@@ -2,28 +2,47 @@ use yew::prelude::*;
 use yew_autoprops::autoprops;
 
 #[autoprops]
-#[function_component(Main)]
-pub fn main() -> HtmlResult {
+#[function_component(Content)]
+pub fn content() -> HtmlResult {
     Ok(html! {
-        <Screen>
-            <div class="container w-full h-full mx-auto px-4 text-slate-900 bg-slate-100 dark:text-slate-50 dark:bg-slate-900">
-                <h1>{ "Incremint" }</h1>
-                <p>{ "Incremental number generator" }</p>
-            </div>
-        </Screen>
+        <div class="container w-full h-full mx-auto px-4 text-slate-900 bg-slate-100 dark:text-slate-50 dark:bg-slate-900">
+            <h1>{ "Incremint" }</h1>
+            { for (0..20).map(|_| html! { <p>{ "Incremental number generator" }</p> }) }
+        </div>
     })
 }
 
 #[autoprops]
-#[function_component(Screen)]
-pub fn screen(children: &Children) -> HtmlResult {
+#[function_component(Document)]
+pub fn document() -> HtmlResult {
     Ok(html! {
-        <div class="flex flex-col min-h-screen">
-            <div class="flex-1">
-                { children.clone() }
-            </div>
+        <body class="min-h-screen min-w-screen">
+            <Header />
+            <Main />
             <Footer />
-        </div>
+        </body>
+    })
+}
+
+#[autoprops]
+#[function_component(Header)]
+pub fn header() -> HtmlResult {
+    Ok(html! {
+        <header class="sticky top-0">
+            <div>
+                <h1>{ "Incremint" }</h1>
+            </div>
+        </header>
+    })
+}
+
+#[autoprops]
+#[function_component(Main)]
+pub fn main() -> HtmlResult {
+    Ok(html! {
+        <main>
+            <Content />
+        </main>
     })
 }
 
@@ -31,8 +50,8 @@ pub fn screen(children: &Children) -> HtmlResult {
 #[function_component(Footer)]
 pub fn footer() -> HtmlResult {
     Ok(html! {
-        <footer class="text-xs text-center p-4">
-            <p>
+        <footer class="sticky top-[100vh]">
+            <p class="text-xs text-center p-4">
                 { "Powered by " }
                 <a href="https://github.com/hayas1/"
                     target="_blank" rel="noopener noreferrer"
