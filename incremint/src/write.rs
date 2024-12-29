@@ -69,53 +69,41 @@ impl std::fmt::Display for Writer<super::digit::Digits> {
 
 impl std::fmt::Display for Writer<super::increment::Incremint> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for i in 0..8 {
-            if i < 1 {
-                for (rp, rn) in self.d.prev.iter().zip(self.d.next.iter()) {
-                    if rp == rn {
-                        for j in 0..4 {
-                            write!(f, "{}", super::SPACE[i + 2][j])?;
-                        }
+        for row in 0..8 {
+            if row < 1 {
+                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    let d = if dp == dn {
+                        &super::digit::Digit::SPACE
                     } else {
-                        for c in rn[i + 2] {
-                            write!(f, "{}", c)?;
-                        }
+                        dn
+                    };
+                    for x in self.digit_row(d, row + 2) {
+                        write!(f, "{}", x)?;
                     }
                 }
-            } else if i < 4 {
-                for (rp, rn) in self.d.prev.iter().zip(self.d.next.iter()) {
-                    if rp == rn {
-                        for j in 0..4 {
-                            write!(f, "{}", rp[i - 1][j])?;
-                        }
-                    } else {
-                        for c in rn[i + 2] {
-                            write!(f, "{}", c)?;
-                        }
+            } else if row < 4 {
+                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    let r = if dp == dn { row - 1 } else { row + 2 };
+                    for x in self.digit_row(dn, r) {
+                        write!(f, "{}", x)?;
                     }
                 }
-            } else if i < 7 {
-                for (rp, rn) in self.d.prev.iter().zip(self.d.next.iter()) {
-                    if rp == rn {
-                        for j in 0..4 {
-                            write!(f, "{}", rp[i - 1][j])?;
-                        }
-                    } else {
-                        for c in rp[i - 4] {
-                            write!(f, "{}", c)?;
-                        }
+            } else if row < 7 {
+                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    let r = if dp == dn { row - 1 } else { row - 4 };
+                    for x in self.digit_row(dp, r) {
+                        write!(f, "{}", x)?;
                     }
                 }
-            } else if i < 8 {
-                for (rp, rn) in self.d.prev.iter().zip(self.d.next.iter()) {
-                    if rp == rn {
-                        for j in 0..4 {
-                            write!(f, "{}", super::SPACE[i - 2][j])?;
-                        }
+            } else if row < 8 {
+                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    let d = if dp == dn {
+                        &super::digit::Digit::SPACE
                     } else {
-                        for c in rp[i - 4] {
-                            write!(f, "{}", c)?;
-                        }
+                        dp
+                    };
+                    for x in self.digit_row(d, row - 4) {
+                        write!(f, "{}", x)?;
                     }
                 }
             }
