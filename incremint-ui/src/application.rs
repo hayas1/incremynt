@@ -26,7 +26,7 @@ pub fn application_main() -> HtmlResult {
     let interface = use_state(|| Interface {
         prev: 2024,
         next: 3024,
-        space: Width::Full,
+        space: Width::Half,
         scale: 1,
     });
     Ok(html! {
@@ -49,8 +49,8 @@ pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult
 
     Ok(html! {
         <div class="h-[50vh] flex justify-center items-center">
-            <div class="text-[4vh]">
-               { for String::from_utf8_lossy(&buf).split("\n").map(ToString::to_string).map(|l| html! { <p>{ l }</p> }) }
+            <div class="rounded-2xl text-[4vh] text-slate-700 bg-white dark:text-slate-100 dark:bg-slate-700">
+                <pre>{ String::from_utf8_lossy(&buf) }</pre>
             </div>
         </div>
     })
@@ -146,8 +146,8 @@ pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> Ht
                     focus:outline-none focus:shadow-outline appearance-none"
             >
                 // TODO selected
-                <option value="0" selected=true>{ "full" }</option>
-                <option value="1">{ "half" }</option>
+                <option value="0">{ "full" }</option>
+                <option value="1" selected=true>{ "half" }</option>
             </select>
         </div>
     })
