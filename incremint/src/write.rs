@@ -77,39 +77,46 @@ impl IncremintWriter {
             inner: DigitsWriter::new(d, scale),
         }
     }
+    pub fn write_chunk<'a>(
+        &'a self,
+        (prev, next): (&'a super::digit::Digit, &'a super::digit::Digit),
+        row: usize,
+    ) -> (&'a super::digit::Digit, usize) {
+        if row < 1 {
+            let d = if prev == next {
+                &super::digit::Digit::SPACE
+            } else {
+                next
+            };
+            (d, row + 2)
+        } else if row < 4 {
+            let r = if prev == next { row - 1 } else { row + 2 };
+            (next, r)
+        } else if row < 7 {
+            let r = if prev == next {
+                row - 1
+            } else {
+                row + 2 - crate::ROWS
+            };
+            (prev, r)
+        } else if row < 8 {
+            let d = if prev == next {
+                &super::digit::Digit::SPACE
+            } else {
+                prev
+            };
+            (d, row + 2 - crate::ROWS)
+        } else {
+            unreachable!();
+        }
+    }
 }
 impl std::fmt::Display for IncremintWriter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let inner = &self.inner;
         for row in 0..(crate::ROWS + 2) {
-            for (dp, dn) in inner.d.prev.iter().zip(inner.d.next.iter()) {
-                let (d, r) = if row < 1 {
-                    let d = if dp == dn {
-                        &super::digit::Digit::SPACE
-                    } else {
-                        dn
-                    };
-                    (d, row + 2)
-                } else if row < 4 {
-                    let r = if dp == dn { row - 1 } else { row + 2 };
-                    (dn, r)
-                } else if row < 7 {
-                    let r = if dp == dn {
-                        row - 1
-                    } else {
-                        row + 2 - crate::ROWS
-                    };
-                    (dp, r)
-                } else if row < 8 {
-                    let d = if dp == dn {
-                        &super::digit::Digit::SPACE
-                    } else {
-                        dp
-                    };
-                    (d, row + 2 - crate::ROWS)
-                } else {
-                    unreachable!()
-                };
+            for dpn in inner.d.prev.iter().zip(inner.d.next.iter()) {
+                let (d, r) = self.write_chunk(dpn, row);
                 for x in inner.digit_row(d, r) {
                     write!(f, "{}", x)?;
                 }
