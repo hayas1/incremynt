@@ -26,6 +26,6 @@ impl Cli {
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     let (prev, next) = (cli.prev.into(), cli.next.into());
-    println!("{}", Incremint { prev, next }.writer(cli.scale));
+    println!("{}", Incremint::new(prev, next).writer(cli.scale));
     Ok(())
 }

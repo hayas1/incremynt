@@ -9,6 +9,12 @@ impl std::fmt::Display for Incremint {
     }
 }
 impl Incremint {
+    pub fn new(mut prev: super::digit::Digits, mut next: super::digit::Digits) -> Self {
+        let len = prev.len().max(next.len());
+        prev.padding(super::digit::Digit::ZERO, len);
+        next.padding(super::digit::Digit::ZERO, len);
+        Self { prev, next }
+    }
     pub fn writer(&self, scale: usize) -> super::write::IncremintWriter {
         super::write::IncremintWriter::new(self, scale)
     }
