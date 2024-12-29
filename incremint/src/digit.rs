@@ -39,7 +39,7 @@ impl Digit {
     pub const NINE: Self = Self(crate::NINE);
 
     pub fn writer(&self, scale: usize) -> super::write::DigitsWriter<Self> {
-        super::write::DigitsWriter::new(self.clone(), scale)
+        super::write::DigitsWriter::new(self, scale)
     }
 }
 
@@ -84,7 +84,7 @@ impl Digits {
         }
     }
     pub fn writer(&self, scale: usize) -> super::write::DigitsWriter<Self> {
-        super::write::DigitsWriter::new(self.clone(), scale)
+        super::write::DigitsWriter::new(self, scale)
     }
 }
 

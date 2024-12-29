@@ -1,10 +1,10 @@
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct DigitsWriter<D> {
-    d: D,
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DigitsWriter<'a, D> {
+    d: &'a D,
     scale: usize,
 }
-impl<D> DigitsWriter<D> {
-    pub fn new(d: D, scale: usize) -> Self {
+impl<'a, D> DigitsWriter<'a, D> {
+    pub fn new(d: &'a D, scale: usize) -> Self {
         Self { d, scale }
     }
     pub fn space_scaled(&self, c: char) -> impl Iterator<Item = char> {
@@ -15,7 +15,7 @@ impl<D> DigitsWriter<D> {
         };
         (0..rep).map(move |_| c)
     }
-    pub fn digit_row<'a>(
+    pub fn digit_row(
         &'a self,
         digit: &'a super::digit::Digit,
         row: usize,
@@ -24,7 +24,7 @@ impl<D> DigitsWriter<D> {
         r.iter().flat_map(move |&c| self.space_scaled(c))
     }
 }
-impl std::fmt::Display for DigitsWriter<super::digit::Digit> {
+impl<'a> std::fmt::Display for DigitsWriter<'a, super::digit::Digit> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..crate::ROWS {
             for x in self.digit_row(&self.d, row) {
@@ -35,7 +35,7 @@ impl std::fmt::Display for DigitsWriter<super::digit::Digit> {
         Ok(())
     }
 }
-impl std::fmt::Display for DigitsWriter<super::digit::Digits> {
+impl<'a> std::fmt::Display for DigitsWriter<'a, super::digit::Digits> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..crate::ROWS {
             for digit in self.d.iter() {
@@ -48,26 +48,10 @@ impl std::fmt::Display for DigitsWriter<super::digit::Digits> {
         Ok(())
     }
 }
-// impl<D> std::fmt::Display for DigitsWriter<&D>
-// where
-//     DigitsWriter<D>: std::fmt::Display,
-// {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}", self)
-//     }
-// }
-// impl<D> std::fmt::Display for DigitsWriter<&mut D>
-// where
-//     DigitsWriter<D>: std::fmt::Display,
-// {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}", self)
-//     }
-// }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct IncremintWriter<'a> {
-    inner: DigitsWriter<&'a super::increment::Incremint>,
+    inner: DigitsWriter<'a, super::increment::Incremint>,
 }
 impl<'a> IncremintWriter<'a> {
     pub fn new(d: &'a super::increment::Incremint, scale: usize) -> Self {
