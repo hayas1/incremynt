@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_autoprops::autoprops;
 
-use crate::content::Content;
+use crate::content::ApplicationMain;
 
 #[autoprops]
 #[function_component(Document)]
@@ -34,7 +34,7 @@ pub fn header() -> HtmlResult {
 pub fn main() -> HtmlResult {
     Ok(html! {
         <main>
-            <Content />
+            <ApplicationMain />
         </main>
     })
 }

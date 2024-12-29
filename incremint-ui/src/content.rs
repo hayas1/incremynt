@@ -21,8 +21,8 @@ impl From<Interface> for Application<Incremint> {
 }
 
 #[autoprops]
-#[function_component(Content)]
-pub fn content() -> HtmlResult {
+#[function_component(ApplicationMain)]
+pub fn application_main() -> HtmlResult {
     let interface = use_state(|| Interface {
         prev: 2024,
         next: 3024,
