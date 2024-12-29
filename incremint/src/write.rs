@@ -69,46 +69,37 @@ impl std::fmt::Display for Writer<super::digit::Digits> {
 
 impl std::fmt::Display for Writer<super::increment::Incremint> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in 0..8 {
-            if row < 1 {
-                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+        for row in 0..(crate::ROWS + 2) {
+            for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                let (d, r) = if row < 1 {
                     let d = if dp == dn {
                         &super::digit::Digit::SPACE
                     } else {
                         dn
                     };
-                    for x in self.digit_row(d, row + 2) {
-                        write!(f, "{}", x)?;
-                    }
-                }
-            } else if row < 4 {
-                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    (d, row + 2)
+                } else if row < 4 {
                     let r = if dp == dn { row - 1 } else { row + 2 };
-                    for x in self.digit_row(dn, r) {
-                        write!(f, "{}", x)?;
-                    }
-                }
-            } else if row < 7 {
-                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    (dn, r)
+                } else if row < 7 {
                     let r = if dp == dn {
                         row - 1
                     } else {
                         row + 2 - crate::ROWS
                     };
-                    for x in self.digit_row(dp, r) {
-                        write!(f, "{}", x)?;
-                    }
-                }
-            } else if row < 8 {
-                for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+                    (dp, r)
+                } else if row < 8 {
                     let d = if dp == dn {
                         &super::digit::Digit::SPACE
                     } else {
                         dp
                     };
-                    for x in self.digit_row(d, row + 2 - crate::ROWS) {
-                        write!(f, "{}", x)?;
-                    }
+                    (d, row + 2 - crate::ROWS)
+                } else {
+                    unreachable!()
+                };
+                for x in self.digit_row(d, r) {
+                    write!(f, "{}", x)?;
                 }
             }
             writeln!(f)?;
