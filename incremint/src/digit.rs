@@ -138,4 +138,37 @@ mod tests {
             ])
         );
     }
+
+    #[test]
+    fn test_digit_display() {
+        let digit = Digit::try_from(3).unwrap();
+        println!("{}", digit);
+        assert_eq!(
+            digit.to_string(),
+            indoc::indoc! {"
+                ┏━━┓
+                ┗━┓┃
+                ┏━┛┃
+                ┗━┓┃
+                ┏━┛┃
+                ┗━━┛
+            "}
+        );
+    }
+
+    #[test]
+    fn test_digits_display() {
+        let digits = Digits::from(2025);
+        assert_eq!(
+            digits.to_string(),
+            indoc::indoc! {"
+                ┏━━┓┏━━┓┏━━┓┏━━┓
+                ┗━┓┃┃┏┓┃┗━┓┃┃┏━┛
+                ┏━┛┃┃┃┃┃┏━┛┃┃┗━┓
+                ┃┏━┛┃┃┃┃┃┏━┛┗━┓┃
+                ┃┗━┓┃┗┛┃┃┗━┓┏━┛┃
+                ┗━━┛┗━━┛┗━━┛┗━━┛
+            "}
+        );
+    }
 }

@@ -36,6 +36,7 @@ impl std::fmt::Display for Writer<super::digit::Digit> {
                     write!(f, "{}", c)?;
                 }
             }
+            writeln!(f)?;
         }
         Ok(())
     }
@@ -43,8 +44,8 @@ impl std::fmt::Display for Writer<super::digit::Digit> {
 
 impl std::fmt::Display for Writer<super::digit::Digits> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for digit in self.d.iter() {
-            for i in 0..6 {
+        for i in 0..6 {
+            for digit in self.d.iter() {
                 for (j, c) in digit[i].iter().enumerate() {
                     if c == &super::SPACE[i][j] {
                         for _ in 0..self.scale {
