@@ -3,44 +3,82 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_autoprops::autoprops;
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+pub struct Interface {
+    prev: usize,
+    next: usize,
+    space: Width,
+    scale: usize,
+}
+impl From<Interface> for Application<Incremint> {
+    fn from(interface: Interface) -> Self {
+        Application::<Incremint> {
+            d: (interface.prev, interface.next).into(),
+            space: interface.space.into(),
+            scale: interface.scale,
+        }
+    }
+}
+
 #[autoprops]
 #[function_component(Content)]
 pub fn content() -> HtmlResult {
-    let program = Application::<Incremint> {
-        d: (0, 0).into(),
+    let interface = use_state(|| Interface {
+        prev: 2024,
+        next: 3024,
         space: Width::Full,
         scale: 1,
-    };
-    let prev = use_state(|| 2024);
-    let next = use_state(|| 3024);
+    });
     Ok(html! {
         <div class="container w-full h-full mx-auto">
-            <div class="h-[50vh] flex justify-center items-center">
-                <div class="text-[4vh]">
-                    {"┏━┛┃            "} <br />
-                    {"┗━┓┃┏━━┓┏━━┓┏┓┏┓"} <br />
-                    {"┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃"} <br />
-                    {"┗━━┛┃┃┃┃┏━┛┃┃┗┛┃"} <br />
-                    {"┏━━┓┃┃┃┃┃┏━┛┗━┓┃"} <br />
-                    {"┗━┓┃┃┗┛┃┃┗━┓　　┃┃"} <br />
-                    {"┏━┛┃┗━━┛┗━━┛　　┗┛"} <br />
-                    {"┃┏━┛            "} <br />
-                </div>
-            </div>
-            <div class="flex justify-center pt-4">
-                <div class="flex-initial mx-2"> <UsizeInput label="prev" value_handler={prev.clone()} /> </div>
-                <div class="flex-initial mx-2"> <UsizeInput label="next" value_handler={next.clone()} /> </div>
-            </div>
-            <p>{ *prev }</p>
-            <p>{ " → " }</p>
-            <p>{ *next }</p>
+            <ApplicationPane value_handler={interface.clone()} />
+            <ApplicationForm value_handler={interface.clone()} />
         </div>
     })
 }
 
 #[autoprops]
-#[function_component(UsizeInput)]
-pub fn usize_input(label: &String, value_handler: &UseStateHandle<usize>) -> HtmlResult {
+#[function_component(ApplicationPane)]
+pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult {
+    let application: Application<_> = (*value_handler.clone()).clone().into();
+
+    let mut buf = Vec::new();
+    application
+        .run(&mut buf)
+        .unwrap_or_else(|e| gloo_console::error!(e.to_string()));
+
+    Ok(html! {
+        <div class="h-[50vh] flex justify-center items-center">
+            <div class="text-[4vh]">
+               { for String::from_utf8_lossy(&buf).split("\n").map(ToString::to_string).map(|l| html! { <p>{ l }</p> }) }
+            </div>
+        </div>
+    })
+}
+
+#[autoprops]
+#[function_component(ApplicationForm)]
+pub fn application_form(value_handler: &UseStateHandle<Interface>) -> HtmlResult {
+    let initial = &*value_handler.clone();
+    let prev = use_state(|| initial.prev);
+    let next = use_state(|| initial.next);
+    value_handler.set(Interface {
+        prev: *prev,
+        next: *next,
+        space: Width::Full,
+        scale: 1,
+    });
+    Ok(html! {
+        <div class="flex justify-center pt-4">
+            <div class="flex-initial mx-2"> <UsizeForm label="prev" value_handler={prev.clone()} /> </div>
+            <div class="flex-initial mx-2"> <UsizeForm label="next" value_handler={next.clone()} /> </div>
+        </div>
+    })
+}
+
+#[autoprops]
+#[function_component(UsizeForm)]
+pub fn usize_form(label: &String, value_handler: &UseStateHandle<usize>) -> HtmlResult {
     let onchange = {
         let value_handler = value_handler.clone();
         Callback::from(move |e: Event| {
