@@ -69,14 +69,15 @@ mod tests {
 
     #[test]
     fn test_cli_behavior() {
-        let cli = Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024"]).unwrap();
+        let cli =
+            Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024", "-s", "full"]).unwrap();
 
         assert_eq!(
             cli,
             Cli {
                 prev: 2024,
                 next: 3024,
-                space: SpaceWidth::Half,
+                space: SpaceWidth::Full,
                 scale: 1
             }
         );
@@ -86,14 +87,14 @@ mod tests {
         assert_eq!(
             String::from_utf8_lossy(&buffer),
             vec![
-                "┏━┛┃            ",
+                "┏━┛┃\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}",
                 "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
                 "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
                 "┗━━┛┃┃┃┃┏━┛┃┃┗┛┃",
                 "┏━━┓┃┃┃┃┃┏━┛┗━┓┃",
-                "┗━┓┃┃┗┛┃┃┗━┓  ┃┃",
-                "┏━┛┃┗━━┛┗━━┛  ┗┛",
-                "┃┏━┛            ",
+                "┗━┓┃┃┗┛┃┃┗━┓\u{3000}\u{3000}┃┃",
+                "┏━┛┃┗━━┛┗━━┛\u{3000}\u{3000}┗┛",
+                "┃┏━┛\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}",
                 "",
             ]
             .join("\n")
