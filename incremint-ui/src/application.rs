@@ -1,3 +1,4 @@
+use chrono::{Datelike, Local};
 use incremint::{increment::Incremint, interface::Application, space::Width};
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
@@ -24,8 +25,8 @@ impl From<Interface> for Application<Incremint> {
 #[function_component(ApplicationMain)]
 pub fn application_main() -> HtmlResult {
     let interface = use_state(|| Interface {
-        prev: 2024,
-        next: 3024,
+        prev: Local::now().year() as usize,
+        next: Local::now().year() as usize + 1000,
         space: Width::Half,
         scale: 1,
     });
