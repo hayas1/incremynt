@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use chrono::{Datelike, Local};
 use clap::{Parser, ValueEnum};
 use incremint::{increment::Incremint, space::Width};
@@ -40,13 +42,17 @@ impl Into<Width> for SpaceWidth {
 }
 
 impl Cli {
-    pub fn run() -> anyhow::Result<()> {
+    pub fn exec() -> anyhow::Result<()> {
         let cli = Self::parse();
-        let (prev, next) = (cli.prev.into(), cli.next.into());
-        println!(
+        cli.run(&mut std::io::stdout().lock())
+    }
+    pub fn run<W: Write>(self, w: &mut W) -> anyhow::Result<()> {
+        let (prev, next) = (self.prev.into(), self.next.into());
+        write!(
+            w,
             "{}",
-            Incremint::new(prev, next).writer(cli.space.into(), cli.scale)
-        );
+            Incremint::new(prev, next).writer(self.space.into(), self.scale)
+        )?;
         Ok(())
     }
     pub fn this_year() -> usize {
@@ -54,5 +60,43 @@ impl Cli {
     }
     pub fn next_year() -> usize {
         Self::this_year() + 1000
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cli() {
+        let cli = Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024"]).unwrap();
+
+        assert_eq!(
+            cli,
+            Cli {
+                prev: 2024,
+                next: 3024,
+                space: SpaceWidth::Half,
+                scale: 1
+            }
+        );
+
+        let mut buffer = Vec::new();
+        cli.run(&mut buffer).unwrap();
+        assert_eq!(
+            String::from_utf8_lossy(&buffer),
+            vec![
+                "┏━┛┃            ",
+                "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
+                "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
+                "┗━━┛┃┃┃┃┏━┛┃┃┗┛┃",
+                "┏━━┓┃┃┃┃┃┏━┛┗━┓┃",
+                "┗━┓┃┃┗┛┃┃┗━┓  ┃┃",
+                "┏━┛┃┗━━┛┗━━┛  ┗┛",
+                "┃┏━┛            ",
+                "",
+            ]
+            .join("\n")
+        );
     }
 }
