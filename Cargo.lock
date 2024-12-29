@@ -789,6 +789,9 @@ dependencies = [
 name = "incremint-ui"
 version = "0.1.0"
 dependencies = [
+ "gloo-console 0.3.0",
+ "incremint",
+ "web-sys",
  "yew",
  "yew-autoprops",
 ]

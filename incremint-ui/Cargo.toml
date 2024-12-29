@@ -4,5 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+incremint = { path = "../incremint" }
+
+gloo-console = "0.3.0"
+web-sys = "0.3.76"
 yew = { version = "0.21.0", features = ["csr"] }
 yew-autoprops = "0.4.1"
