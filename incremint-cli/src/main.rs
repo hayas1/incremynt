@@ -1,6 +1,6 @@
 use chrono::{Datelike, Local};
 use clap::Parser;
-use incremint::increment::Incremint;
+use incremint::{increment::Incremint, write::IncremintWriter};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
@@ -26,6 +26,7 @@ impl Cli {
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     let (prev, next) = (cli.prev.into(), cli.next.into());
-    println!("{}", Incremint { prev, next });
+    let writer = IncremintWriter::new(Incremint { prev, next }, cli.scale);
+    println!("{}", writer);
     Ok(())
 }
