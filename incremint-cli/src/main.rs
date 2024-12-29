@@ -19,7 +19,7 @@ impl Cli {
         Local::now().year() as usize
     }
     pub fn next_year() -> usize {
-        Self::this_year() + 1
+        Self::this_year() + 1000
     }
 }
 
