@@ -1,9 +1,9 @@
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct Writer<D> {
+pub struct DigitsWriter<D> {
     d: D,
     scale: usize,
 }
-impl<D> Writer<D> {
+impl<D> DigitsWriter<D> {
     pub fn new(d: D, scale: usize) -> Self {
         Self { d, scale }
     }
@@ -41,7 +41,7 @@ impl<D> Writer<D> {
 //         write!(f, "{}", self)
 //     }
 // }
-impl std::fmt::Display for Writer<super::digit::Digit> {
+impl std::fmt::Display for DigitsWriter<super::digit::Digit> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..crate::ROWS {
             for x in self.digit_row(&self.d, row) {
@@ -53,7 +53,7 @@ impl std::fmt::Display for Writer<super::digit::Digit> {
     }
 }
 
-impl std::fmt::Display for Writer<super::digit::Digits> {
+impl std::fmt::Display for DigitsWriter<super::digit::Digits> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 0..crate::ROWS {
             for digit in self.d.iter() {
@@ -67,10 +67,22 @@ impl std::fmt::Display for Writer<super::digit::Digits> {
     }
 }
 
-impl std::fmt::Display for Writer<super::increment::Incremint> {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+pub struct IncremintWriter {
+    inner: DigitsWriter<super::increment::Incremint>,
+}
+impl IncremintWriter {
+    pub fn new(d: super::increment::Incremint, scale: usize) -> Self {
+        Self {
+            inner: DigitsWriter::new(d, scale),
+        }
+    }
+}
+impl std::fmt::Display for IncremintWriter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let inner = &self.inner;
         for row in 0..(crate::ROWS + 2) {
-            for (dp, dn) in self.d.prev.iter().zip(self.d.next.iter()) {
+            for (dp, dn) in inner.d.prev.iter().zip(inner.d.next.iter()) {
                 let (d, r) = if row < 1 {
                     let d = if dp == dn {
                         &super::digit::Digit::SPACE
@@ -98,7 +110,7 @@ impl std::fmt::Display for Writer<super::increment::Incremint> {
                 } else {
                     unreachable!()
                 };
-                for x in self.digit_row(d, r) {
+                for x in inner.digit_row(d, r) {
                     write!(f, "{}", x)?;
                 }
             }

@@ -5,7 +5,7 @@ pub struct Incremint {
 }
 impl std::fmt::Display for Incremint {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let writer = super::write::Writer::new(self.clone(), 1);
+        let writer = super::write::IncremintWriter::new(self.clone(), 1);
         write!(f, "{}", writer)
     }
 }
