@@ -46,7 +46,7 @@ pub fn footer() -> HtmlResult {
         <footer class="sticky top-[100vh]">
             <p class="text-xs text-center p-4">
                 { "Powered by " }
-                <a href="https://github.com/hayas1/"
+                <a href={ env!("CARGO_PKG_REPOSITORY") }
                     target="_blank" rel="noopener noreferrer"
                     class="underline"
                 >
