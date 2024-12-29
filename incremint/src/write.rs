@@ -7,13 +7,21 @@ impl<D> Writer<D> {
     pub fn new(d: D, scale: usize) -> Self {
         Self { d, scale }
     }
-    pub fn space_scaled(&self, c: char, (i, j): (usize, usize)) -> impl Iterator<Item = char> {
-        let rep = if c == crate::SPACE[i][j] {
+    pub fn space_scaled(&self, c: char) -> impl Iterator<Item = char> {
+        let rep = if c == crate::SPACE[0][0] {
             self.scale
         } else {
             1
         };
         (0..rep).map(move |_| c)
+    }
+    pub fn digit_row<'a>(
+        &'a self,
+        digit: &'a super::digit::Digit,
+        row: usize,
+    ) -> impl 'a + Iterator<Item = char> {
+        let r = &digit[row];
+        r.iter().flat_map(move |&c| self.space_scaled(c))
     }
 }
 
@@ -35,11 +43,9 @@ impl<D> Writer<D> {
 // }
 impl std::fmt::Display for Writer<super::digit::Digit> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for (i, row) in self.d.iter().enumerate() {
-            for (j, &c) in row.iter().enumerate() {
-                for x in self.space_scaled(c, (i, j)) {
-                    write!(f, "{}", x)?;
-                }
+        for row in 0..crate::ROWS {
+            for x in self.digit_row(&self.d, row) {
+                write!(f, "{}", x)?;
             }
             writeln!(f)?;
         }
@@ -49,12 +55,10 @@ impl std::fmt::Display for Writer<super::digit::Digit> {
 
 impl std::fmt::Display for Writer<super::digit::Digits> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for i in 0..crate::ROWS {
+        for row in 0..crate::ROWS {
             for digit in self.d.iter() {
-                for (j, &c) in digit[i].iter().enumerate() {
-                    for x in self.space_scaled(c, (i, j)) {
-                        write!(f, "{}", x)?;
-                    }
+                for x in self.digit_row(digit, row) {
+                    write!(f, "{}", x)?;
                 }
             }
             writeln!(f)?;
