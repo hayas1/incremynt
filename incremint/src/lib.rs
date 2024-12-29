@@ -1,6 +1,7 @@
 pub mod digit;
 pub mod error;
 pub mod increment;
+pub mod interface;
 pub mod space;
 pub mod write;
 

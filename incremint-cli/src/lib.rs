@@ -2,7 +2,7 @@ use std::io::Write;
 
 use chrono::{Datelike, Local};
 use clap::{Parser, ValueEnum};
-use incremint::{increment::Incremint, space::Width};
+use incremint::{interface::Application, space::Width};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
@@ -26,6 +26,16 @@ pub struct Cli {
     #[clap(default_value_t = 1)]
     scale: usize,
 }
+impl Into<Application> for Cli {
+    fn into(self) -> Application {
+        Application {
+            prev: self.prev,
+            next: self.next,
+            space: self.space.into(),
+            scale: self.scale,
+        }
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, ValueEnum)]
 pub enum SpaceWidth {
     #[default]
@@ -47,13 +57,7 @@ impl Cli {
         cli.run(&mut std::io::stdout().lock())
     }
     pub fn run<W: Write>(self, w: &mut W) -> anyhow::Result<()> {
-        let (prev, next) = (self.prev.into(), self.next.into());
-        write!(
-            w,
-            "{}",
-            Incremint::new(prev, next).writer(self.space.into(), self.scale)
-        )?;
-        Ok(())
+        Ok(<_ as Into<Application>>::into(self).run(w)?)
     }
     pub fn this_year() -> usize {
         Local::now().year() as usize
@@ -69,15 +73,14 @@ mod tests {
 
     #[test]
     fn test_cli_behavior() {
-        let cli =
-            Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024", "-s", "full"]).unwrap();
+        let cli = Cli::try_parse_from(["incremint", "-p", "2024", "-n", "3024"]).unwrap();
 
         assert_eq!(
             cli,
             Cli {
                 prev: 2024,
                 next: 3024,
-                space: SpaceWidth::Full,
+                space: SpaceWidth::Half,
                 scale: 1
             }
         );
@@ -87,14 +90,14 @@ mod tests {
         assert_eq!(
             String::from_utf8_lossy(&buffer),
             vec![
-                "┏━┛┃\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}",
+                "┏━┛┃            ",
                 "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
                 "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
                 "┗━━┛┃┃┃┃┏━┛┃┃┗┛┃",
                 "┏━━┓┃┃┃┃┃┏━┛┗━┓┃",
-                "┗━┓┃┃┗┛┃┃┗━┓\u{3000}\u{3000}┃┃",
-                "┏━┛┃┗━━┛┗━━┛\u{3000}\u{3000}┗┛",
-                "┃┏━┛\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}",
+                "┗━┓┃┃┗┛┃┃┗━┓  ┃┃",
+                "┏━┛┃┗━━┛┗━━┛  ┗┛",
+                "┃┏━┛            ",
                 "",
             ]
             .join("\n")
