@@ -9,4 +9,4 @@ license.workspace = true
 [dependencies]
 
 [dev-dependencies]
-indoc = "2.0.5"
+indoc = "2.0.6"
