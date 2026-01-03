@@ -1,4 +1,4 @@
-use std::fmt::{Display, Write};
+use std::fmt::Display;
 
 use crate::Digit;
 
@@ -37,13 +37,26 @@ impl<W> Spacer<W> {
             &self.space.to_string().repeat(self.scale),
         )
     }
+    pub fn io_write(self) -> IoSpacer<W> {
+        IoSpacer(self)
+    }
 }
-impl<W> Write for Spacer<W>
+impl<W> std::fmt::Write for Spacer<W>
 where
-    W: Write,
+    W: std::fmt::Write,
 {
     fn write_str(&mut self, s: &str) -> std::fmt::Result {
         write!(self.writer, "{}", self.scaled(s))
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+pub struct IoSpacer<W>(Spacer<W>);
+impl<W> std::fmt::Write for IoSpacer<W>
+where
+    W: std::io::Write,
+{
+    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+        write!(self.0.writer, "{}", self.0.scaled(s)).map_err(|_| std::fmt::Error)
     }
 }
 
@@ -119,6 +132,7 @@ mod tests {
         #[case] area: SlotsArea,
         #[case] expected: Vec<&str>,
     ) {
+        use std::fmt::Write;
         let mut buf = String::new();
         write!(Spacer::new(&mut buf, space, scale), "{area}").unwrap();
         assert_eq!(buf, expected.join("\n"));

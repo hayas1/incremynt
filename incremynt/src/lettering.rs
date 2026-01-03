@@ -74,6 +74,29 @@ impl SlotsArea {
     pub fn new(slots: Vec<Slot>, hight: usize) -> Self {
         Self { slots, hight }
     }
+    pub fn digits2(prev: Vec<Digit>, next: Vec<Digit>) -> Self {
+        let mut short = vec![Digit::Space; prev.len().max(next.len()) - prev.len().min(next.len())];
+        let (pd, nd) = if prev.len() < next.len() {
+            short.extend(prev);
+            (short, next)
+        } else {
+            short.extend(next);
+            (prev, short)
+        };
+
+        let slots = pd
+            .into_iter()
+            .zip(nd)
+            .map(|(prev, next)| {
+                let is_changed = next != prev;
+                Slot::new(
+                    prev,
+                    is_changed.then(|| Progress::new(next, Progress::half_progress())),
+                )
+            })
+            .collect();
+        Self::new(slots, Self::rows_hight())
+    }
     pub fn rows(&self) -> Vec<Vec<&RowRepresentation>> {
         (0..self.hight)
             .map(|i| self.slots.iter().map(|s| s.row(i, self.hight)).collect())

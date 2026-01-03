@@ -1,8 +1,6 @@
-use std::io::Write;
-
 use chrono::{Datelike, Local};
 use clap::{Parser, ValueEnum};
-use incremynt::{increment::Incremynt, interface::Application, space::Width};
+use incremynt::{Digit, SlotsArea, Space, Spacer};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, Parser)]
 pub struct Cli {
@@ -26,15 +24,6 @@ pub struct Cli {
     #[clap(default_value_t = 1)]
     scale: usize,
 }
-impl From<Cli> for Application<Incremynt> {
-    fn from(cli: Cli) -> Self {
-        Application::<Incremynt> {
-            d: (cli.prev, cli.next).into(),
-            space: cli.space.into(),
-            scale: cli.scale,
-        }
-    }
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash, ValueEnum)]
 pub enum SpaceWidth {
@@ -42,11 +31,11 @@ pub enum SpaceWidth {
     Half,
     Full,
 }
-impl From<SpaceWidth> for Width {
+impl From<SpaceWidth> for Space {
     fn from(width: SpaceWidth) -> Self {
         match width {
-            SpaceWidth::Half => Width::Half,
-            SpaceWidth::Full => Width::Full,
+            SpaceWidth::Half => Self::Half,
+            SpaceWidth::Full => Self::Full,
         }
     }
 }
@@ -56,8 +45,11 @@ impl Cli {
         let cli = Self::parse();
         cli.run(&mut std::io::stdout().lock())
     }
-    pub fn run<W: Write>(self, w: &mut W) -> anyhow::Result<()> {
-        Ok(Application::<Incremynt>::from(self).run(w)?)
+    pub fn run<W: std::io::Write>(self, w: &mut W) -> anyhow::Result<()> {
+        use std::fmt::Write;
+        let spacer = Spacer::new(w, self.space.into(), self.scale);
+        let area = SlotsArea::digits2(Digit::digits(self.prev), Digit::digits(self.next));
+        Ok(write!(spacer.io_write(), "{area}")?)
     }
     pub fn this_year() -> usize {
         Local::now().year() as usize

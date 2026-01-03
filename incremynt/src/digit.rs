@@ -136,6 +136,15 @@ impl Digit {
             _ => unreachable!(),
         }
     }
+    pub fn digits(mut n: usize) -> Vec<Self> {
+        let mut d = Vec::new();
+        while n > 0 {
+            d.push(Self::mod_10(n));
+            n /= 10;
+        }
+        d.reverse();
+        d
+    }
     pub const fn representation(&self) -> &DigitRepresentation {
         match self {
             Self::Space => &Self::SPACE,
