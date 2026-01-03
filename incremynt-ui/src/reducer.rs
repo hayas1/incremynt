@@ -50,6 +50,7 @@ pub enum SlotsAction {
     UpdateSlotPrev { index: usize, new: Digit },
     AddProgress { index: usize },
     UpdateSlotNextDigit { index: usize, new: Digit },
+    UpdateSlotNextProgress { index: usize, new: usize },
     RemoveProgress { index: usize },
     PushSlot(Slot),
     PopSlot,
@@ -74,6 +75,11 @@ impl Reducible for State<SlotsArea> {
             SlotsAction::UpdateSlotNextDigit { index, new } => match &mut area.slots[index].next {
                 n @ None => *n = Some(Progress::new(new, 0)),
                 Some(p) => p.next = new,
+            },
+            SlotsAction::UpdateSlotNextProgress { index, new } => match &mut area.slots[index].next
+            {
+                n @ None => *n = Some(Progress::new(Digit::Zero, new)),
+                Some(p) => p.progress = new,
             },
             SlotsAction::RemoveProgress { index } => {
                 area.slots[index].next = None;

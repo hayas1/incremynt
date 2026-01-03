@@ -154,10 +154,16 @@ pub fn slot_form(
             );
         })
     };
-    let progress_add = {
+    let progress_open = {
         let pane_dispatcher = pane_dispatcher.clone();
         Callback::from(move |_| {
             pane_dispatcher.dispatch(SlotsAction::AddProgress { index }.into());
+        })
+    };
+    let progress_close = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |_| {
+            pane_dispatcher.dispatch(SlotsAction::RemoveProgress { index }.into());
         })
     };
     Ok(html! {
@@ -170,9 +176,10 @@ pub fn slot_form(
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
                     if let Some(progress) = &slot.next {
+                        <a href="#" onclick={progress_close}>{"×"}</a>
                         <ProgressForm index={index} progress={progress.clone()} pane_dispatcher={pane_dispatcher.clone()} />
                     } else {
-                        <a href="#" onclick={progress_add}>{"+"}</a>
+                        <a href="#" onclick={progress_open}>{"+"}</a>
                     }
                 </div>
             </div>
@@ -208,11 +215,28 @@ pub fn progress_form(
             );
         })
     };
+    let progress_onchange = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |e: Event| {
+            let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
+                return gloo_console::error!("application dom may be changed");
+            };
+            let Ok(value) = input.value().parse() else {
+                return gloo_console::error!("fail to parse value");
+            };
+            pane_dispatcher
+                .dispatch(SlotsAction::UpdateSlotNextProgress { index, new: value }.into());
+        })
+    };
+
     Ok(html! {
         <div class="flex flex-col">
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
                     <DigitSelect::<_, _> label="next" digit={progress.next.clone()} onchange={next_digit_onchange} />
+                </div>
+                <div class="flex-initial px-4 w-full">
+                    <UsizeInput::<_, _> label="progress" value={progress.progress} onchange={progress_onchange} />
                 </div>
             </div>
         </div>
