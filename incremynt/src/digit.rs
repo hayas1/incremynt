@@ -164,13 +164,10 @@ impl Digit {
 }
 impl Display for Digit {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for row in self.representation() {
-            for col in row {
-                write!(f, "{}", col)?
-            }
-            writeln!(f)?
-        }
-        Ok(())
+        self.representation().iter().try_fold((), |(), row| {
+            row.iter().try_fold((), |(), col| write!(f, "{}", col))?;
+            writeln!(f)
+        })
     }
 }
 
