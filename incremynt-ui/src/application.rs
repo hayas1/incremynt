@@ -176,10 +176,10 @@ pub fn slot_form(
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
                     if let Some(progress) = &slot.next {
-                        <a href="#" onclick={progress_close}>{"×"}</a>
+                        <a onclick={progress_close}>{"×"}</a>
                         <ProgressForm index={index} progress={progress.clone()} pane_dispatcher={pane_dispatcher.clone()} />
                     } else {
-                        <a href="#" onclick={progress_open}>{"+"}</a>
+                        <a onclick={progress_open}>{"+"}</a>
                     }
                 </div>
             </div>
@@ -236,7 +236,7 @@ pub fn progress_form(
                     <DigitSelect::<_, _> label="next" digit={progress.next.clone()} onchange={next_digit_onchange} />
                 </div>
                 <div class="flex-initial px-4 w-full">
-                    <UsizeInput::<_, _> label="progress" value={progress.progress} onchange={progress_onchange} />
+                    <UsizeInputRange::<_, _> label="progress" value={progress.progress} min=2 max=6 onchange={progress_onchange} />
                 </div>
             </div>
         </div>
@@ -324,6 +324,30 @@ where
         <div class="flex items-center border-b border-slate-500">
             <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
             <input type="number" id={input_id.clone()} value={value.to_string()} min="0" onchange={onchange}
+                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
+                    focus:outline-none focus:shadow-outline appearance-none"
+            />
+        </div>
+    })
+}
+#[autoprops]
+#[function_component(UsizeInputRange)]
+pub fn usize_input_range<I, O>(
+    label: &String,
+    value: &usize,
+    min: &usize,
+    max: &usize,
+    onchange: Callback<I, O>,
+) -> HtmlResult
+where
+    Callback<I, O>: IntoEventCallback<web_sys::Event>,
+{
+    let input_id = format!("input-int-{}", label);
+
+    Ok(html! {
+        <div class="flex items-center border-b border-slate-500">
+            <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
+            <input type="range" id={input_id.clone()} value={value.to_string()} min={min.to_string()} max={max.to_string()} onchange={onchange}
                 class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             />
