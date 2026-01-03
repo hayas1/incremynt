@@ -19,8 +19,8 @@ impl Progress {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Slot {
-    prev: Digit,
-    next: Option<Progress>,
+    pub prev: Digit,
+    pub next: Option<Progress>,
 }
 impl Slot {
     pub fn new(prev: Digit, next: Option<Progress>) -> Self {
@@ -64,7 +64,7 @@ impl Display for Slot {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct SlotsArea {
-    slots: Vec<Slot>,
+    pub slots: Vec<Slot>,
     hight: usize,
 }
 impl SlotsArea {

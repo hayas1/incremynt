@@ -18,18 +18,13 @@ impl Display for Space {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct Spacer<W> {
-    writer: W,
-    space: Space,
-    scale: usize,
+pub struct Spacer {
+    pub space: Space,
+    pub scale: usize,
 }
-impl<W> Spacer<W> {
-    pub fn new(writer: W, space: Space, scale: usize) -> Self {
-        Spacer {
-            writer,
-            space,
-            scale,
-        }
+impl Spacer {
+    pub fn new(space: Space, scale: usize) -> Self {
+        Spacer { space, scale }
     }
     pub fn scaled(&self, s: &str) -> String {
         s.replace(
@@ -37,26 +32,54 @@ impl<W> Spacer<W> {
             &self.space.to_string().repeat(self.scale),
         )
     }
-    pub fn io_write(self) -> IoSpacer<W> {
-        IoSpacer(self)
+    pub fn fmt_write<W>(self, writer: W) -> FmtSpacer<W> {
+        FmtSpacer {
+            writer,
+            spacer: self,
+        }
+    }
+    pub fn io_write<W>(self, writer: W) -> IoSpacer<W> {
+        IoSpacer {
+            writer,
+            spacer: self,
+        }
     }
 }
-impl<W> std::fmt::Write for Spacer<W>
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+pub struct FmtSpacer<W> {
+    writer: W,
+    spacer: Spacer,
+}
+impl<W> FmtSpacer<W> {
+    pub fn write(&self) -> &W {
+        &self.writer
+    }
+}
+impl<W> std::fmt::Write for FmtSpacer<W>
 where
     W: std::fmt::Write,
 {
     fn write_str(&mut self, s: &str) -> std::fmt::Result {
-        write!(self.writer, "{}", self.scaled(s))
+        write!(self.writer, "{}", self.spacer.scaled(s))
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct IoSpacer<W>(Spacer<W>);
+pub struct IoSpacer<W> {
+    writer: W,
+    spacer: Spacer,
+}
+impl<W> IoSpacer<W> {
+    pub fn write(&self) -> &W {
+        &self.writer
+    }
+}
 impl<W> std::fmt::Write for IoSpacer<W>
 where
     W: std::io::Write,
 {
     fn write_str(&mut self, s: &str) -> std::fmt::Result {
-        write!(self.0.writer, "{}", self.0.scaled(s)).map_err(|_| std::fmt::Error)
+        write!(self.writer, "{}", self.spacer.scaled(s)).map_err(|_| std::fmt::Error)
     }
 }
 
@@ -134,7 +157,7 @@ mod tests {
     ) {
         use std::fmt::Write;
         let mut buf = String::new();
-        write!(Spacer::new(&mut buf, space, scale), "{area}").unwrap();
+        write!(Spacer::new(space, scale).fmt_write(&mut buf), "{area}").unwrap();
         assert_eq!(buf, expected.join("\n"));
     }
 }

@@ -47,9 +47,9 @@ impl Cli {
     }
     pub fn run<W: std::io::Write>(self, w: &mut W) -> anyhow::Result<()> {
         use std::fmt::Write;
-        let spacer = Spacer::new(w, self.space.into(), self.scale);
+        let spacer = Spacer::new(self.space.into(), self.scale);
         let area = SlotsArea::digits2(Digit::digits(self.prev), Digit::digits(self.next));
-        Ok(write!(spacer.io_write(), "{area}")?)
+        Ok(write!(spacer.io_write(w), "{area}")?)
     }
     pub fn this_year() -> usize {
         Local::now().year() as usize
