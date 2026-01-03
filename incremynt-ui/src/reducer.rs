@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use chrono::{Datelike, Local};
-use incremynt::{Digit, Slot, SlotsArea, Space, Spacer};
+use incremynt::{Digit, Progress, Slot, SlotsArea, Space, Spacer};
 use yew::Reducible;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
@@ -47,18 +47,36 @@ impl Reducible for State<Application> {
 
 #[derive(Debug, Clone)]
 pub enum SlotsAction {
-    UpdateSlot { index: usize, new: Slot },
+    UpdateSlotPrev { index: usize, new: Digit },
+    UpdateSlotNextDigit { index: usize, new: Digit },
+    PushSlot(Slot),
+    PopSlot,
+}
+impl From<SlotsAction> for AppAction {
+    fn from(action: SlotsAction) -> Self {
+        AppAction::SlotsAction(action)
+    }
 }
 impl Reducible for State<SlotsArea> {
     type Action = SlotsAction;
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
+        let mut area = self.0.clone();
         match action {
-            SlotsAction::UpdateSlot { index, new } => {
-                let mut slots = self.0.slots.clone();
-                slots[index] = new;
-                Rc::new(Self(SlotsArea::new(slots, SlotsArea::rows_hight())))
+            SlotsAction::UpdateSlotPrev { index, new } => {
+                area.slots[index].prev = new;
+            }
+            SlotsAction::UpdateSlotNextDigit { index, new } => match &mut area.slots[index].next {
+                n @ None => *n = Some(Progress::new(new, 0)),
+                Some(p) => p.next = new,
+            },
+            SlotsAction::PushSlot(slot) => {
+                area.slots.push(slot);
+            }
+            SlotsAction::PopSlot => {
+                area.slots.pop();
             }
         }
+        Rc::new(Self(area))
     }
 }
 

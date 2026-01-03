@@ -4,8 +4,8 @@ use crate::{digit::Digit, RowRepresentation, ROWS};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Progress {
-    next: Digit,
-    progress: usize,
+    pub next: Digit,
+    pub progress: usize,
 }
 impl Progress {
     pub fn half_progress() -> usize {
