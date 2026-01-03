@@ -170,17 +170,21 @@ pub fn slot_form(
         <div class="flex flex-col">
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
-                    <DigitSelect::<_, _> label="prev" digit={slot.prev.clone()} onchange={prev_digit_onchange} />
+                    if let Some(progress) = &slot.next {
+                        <div class="flex justify-start px-4 w-full">
+                            <a href="#" onclick={progress_close}>{"×"}</a>
+                            <ProgressForm index={index} progress={progress.clone()} pane_dispatcher={pane_dispatcher.clone()} />
+                        </div>
+                    } else {
+                        <div class="flex justify-start px-4 w-full">
+                            <a href="#" onclick={progress_open}>{"+"}</a>
+                        </div>
+                    }
                 </div>
             </div>
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
-                    if let Some(progress) = &slot.next {
-                        <a onclick={progress_close}>{"×"}</a>
-                        <ProgressForm index={index} progress={progress.clone()} pane_dispatcher={pane_dispatcher.clone()} />
-                    } else {
-                        <a onclick={progress_open}>{"+"}</a>
-                    }
+                    <DigitSelect::<_, _> label="prev" digit={slot.prev.clone()} onchange={prev_digit_onchange} />
                 </div>
             </div>
         </div>
