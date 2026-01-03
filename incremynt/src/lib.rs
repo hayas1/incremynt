@@ -1,5 +1,5 @@
-pub mod application;
 mod digit;
 mod lettering;
+mod spacer;
 
-pub use {digit::*, lettering::*};
+pub use {digit::*, lettering::*, spacer::*};
