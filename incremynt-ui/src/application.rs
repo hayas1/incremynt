@@ -350,10 +350,10 @@ where
 
     Ok(html! {
         <div class="flex items-center border-b border-slate-500">
-            <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
+            <label for={input_id.clone()} class="pe-2 text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
             <input type="range" id={input_id.clone()} value={value.to_string()} min={min.to_string()} max={max.to_string()} onchange={onchange}
                 class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
-                    focus:outline-none focus:shadow-outline appearance-none"
+                    focus:outline-none focus:shadow-outline range-sm cursor-pointer"
             />
         </div>
     })
