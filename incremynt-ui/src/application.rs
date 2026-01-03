@@ -1,5 +1,5 @@
 use html::IntoEventCallback;
-use incremynt::{Digit, Slot, SlotsArea, Space, Spacer};
+use incremynt::{Digit, Progress, Slot, SlotsArea, Space, Spacer};
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 use yew_autoprops::autoprops;
@@ -9,7 +9,7 @@ use crate::reducer::{Application, SlotsAction, SpacerAction, State};
 #[autoprops]
 #[function_component(ApplicationMain)]
 pub fn application_main() -> HtmlResult {
-    let app = use_reducer_eq(|| State(Application::init()));
+    let app = use_reducer(|| State(Application::init()));
     let dispatcher = app.dispatcher();
     Ok(html! {
         <div class="container w-full h-full mx-auto">
@@ -68,8 +68,8 @@ pub fn application_form(
     value_handler: &UseReducerHandle<State<Application>>,
     pane_dispatcher: &UseReducerDispatcher<State<Application>>,
 ) -> HtmlResult {
-    let area = use_reducer_eq(|| State(value_handler.0.area.clone()));
-    let space = use_reducer_eq(|| State(value_handler.0.spacer.clone()));
+    let area = value_handler.0.area.clone();
+    let spacer = value_handler.0.spacer.clone();
     let scale = value_handler.0.spacer.scale;
     let scale_onchange = {
         let pane_dispatcher = pane_dispatcher.clone();
@@ -88,12 +88,12 @@ pub fn application_form(
         <div class="flex flex-col">
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
-                    <AreaForm value_handler={area.clone()}  pane_dispatcher={pane_dispatcher.clone()} />
+                    <AreaForm area={area.clone()}  pane_dispatcher={pane_dispatcher.clone()} />
                 </div>
             </div>
             <div class="md:flex justify-center pt-4">
                 <div class="flex-initial px-4 w-full">
-                    <SpaceSelect label="space" value_handler={space.clone()} pane_dispatcher={pane_dispatcher.clone()} />
+                    <SpaceSelect label="space" spacer={spacer.clone()} pane_dispatcher={pane_dispatcher.clone()} />
                 </div>
                 <div class="flex-initial px-4 w-full">
                     <UsizeInput::<_, _> label="scale" value={scale.clone()} onchange={scale_onchange} />
@@ -106,14 +106,14 @@ pub fn application_form(
 #[autoprops]
 #[function_component(AreaForm)]
 pub fn slots_form(
-    value_handler: &UseReducerHandle<State<SlotsArea>>,
+    area: &SlotsArea,
     pane_dispatcher: &UseReducerDispatcher<State<Application>>,
 ) -> HtmlResult {
     Ok(html! {
         <div class="flex flex-col">
             <div class="md:flex justify-center pt-4">
                 {
-                    value_handler.0.slots.iter().enumerate().map(|(i, s)| {
+                    area.slots.iter().enumerate().map(|(i, s)| {
                         html! {
                             <div class="flex-initial px-4 w-full">
                                 <SlotForm index={i} slot={s.clone()} pane_dispatcher={pane_dispatcher.clone()} />
@@ -154,6 +154,12 @@ pub fn slot_form(
             );
         })
     };
+    let progress_add = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |_| {
+            pane_dispatcher.dispatch(SlotsAction::AddProgress { index }.into());
+        })
+    };
     Ok(html! {
         <div class="flex flex-col">
             <div class="md:flex justify-center pt-4">
@@ -162,9 +168,52 @@ pub fn slot_form(
                 </div>
             </div>
             <div class="md:flex justify-center pt-4">
-                // <div class="flex-initial px-4 w-full">
-                //     <DigitSelect::<_, _> label="next" digit={slot.prev.clone()} onchange={prev_digit_onchange} />
-                // </div>
+                <div class="flex-initial px-4 w-full">
+                    if let Some(progress) = &slot.next {
+                        <ProgressForm index={index} progress={progress.clone()} pane_dispatcher={pane_dispatcher.clone()} />
+                    } else {
+                        <a href="#" onclick={progress_add}>{"+"}</a>
+                    }
+                </div>
+            </div>
+        </div>
+    })
+}
+#[autoprops]
+#[function_component(ProgressForm)]
+pub fn progress_form(
+    index: usize,
+    progress: &Progress,
+    pane_dispatcher: &UseReducerDispatcher<State<Application>>,
+) -> HtmlResult {
+    let next_digit_onchange = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |e: Event| {
+            let Some(input): Option<HtmlSelectElement> = e.target_dyn_into() else {
+                return gloo_console::error!("application dom may be changed");
+            };
+            let Ok(value) = input.value().parse() else {
+                return gloo_console::error!("fail to parse value");
+            };
+            pane_dispatcher.dispatch(
+                SlotsAction::UpdateSlotNextDigit {
+                    index,
+                    new: if value < 10 {
+                        Digit::mod_10(value)
+                    } else {
+                        unreachable!()
+                    },
+                }
+                .into(),
+            );
+        })
+    };
+    Ok(html! {
+        <div class="flex flex-col">
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full">
+                    <DigitSelect::<_, _> label="next" digit={progress.next.clone()} onchange={next_digit_onchange} />
+                </div>
             </div>
         </div>
     })
@@ -203,7 +252,7 @@ where
 #[function_component(SpaceSelect)]
 pub fn space_select(
     label: &String,
-    value_handler: &UseReducerHandle<State<Spacer>>,
+    spacer: &Spacer,
     pane_dispatcher: &UseReducerDispatcher<State<Application>>,
 ) -> HtmlResult {
     let onchange = {
@@ -232,8 +281,8 @@ pub fn space_select(
                 class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             >
-                <option value="full" selected={(*value_handler.clone()).0.space == Space::Full}>{ "full" }</option>
-                <option value="half" selected={(*value_handler.clone()).0.space == Space::Half}>{ "half" }</option>
+                <option value="full" selected={spacer.space == Space::Full}>{ "full" }</option>
+                <option value="half" selected={spacer.space == Space::Half}>{ "half" }</option>
             </select>
         </div>
     })
