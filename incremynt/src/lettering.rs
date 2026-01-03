@@ -95,69 +95,62 @@ impl Display for SlotsArea {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_slot_lettering() {
-        let keep = Slot::new(Digit::Three, None);
-        assert_eq!(
-            keep.to_string(),
-            vec![
-                "    ",
-                "┏━━┓",
-                "┗━┓┃",
-                "┏━┛┃",
-                "┗━┓┃",
-                "┏━┛┃",
-                "┗━━┛",
-                "    ",
-                "",
-            ]
-            .join("\n")
-        );
-
-        let away = Slot::new(
+    #[rstest::rstest]
+    #[case::keep(
+        Slot::new(Digit::Three, None),
+        vec![
+            "    ",
+            "┏━━┓",
+            "┗━┓┃",
+            "┏━┛┃",
+            "┗━┓┃",
+            "┏━┛┃",
+            "┗━━┛",
+            "    ",
+            "",
+        ]
+    )]
+    #[case::away(
+        Slot::new(
             Digit::Four,
             Some(Progress::new(Digit::Five, Progress::half_progress())),
-        );
-        assert_eq!(
-            away.to_string(),
-            vec![
-                "┃┗━┓",
-                "┗━┓┃",
-                "┏━┛┃",
-                "┗━━┛",
-                "┏┓┏┓",
-                "┃┃┃┃",
-                "┃┗┛┃",
-                "┗━┓┃",
-                "",
-            ]
-            .join("\n")
-        );
-
-        let progress = Slot::new(
+        ),
+        vec![
+            "┃┗━┓",
+            "┗━┓┃",
+            "┏━┛┃",
+            "┗━━┛",
+            "┏┓┏┓",
+            "┃┃┃┃",
+            "┃┗┛┃",
+            "┗━┓┃",
+            "",
+        ]
+    )]
+    #[case::progress(
+        Slot::new(
             Digit::Four,
             Some(Progress::new(Digit::Five, Progress::half_progress() + 1)),
-        );
-        assert_eq!(
-            progress.to_string(),
-            vec![
-                "┃┏━┛",
-                "┃┗━┓",
-                "┗━┓┃",
-                "┏━┛┃",
-                "┗━━┛",
-                "┏┓┏┓",
-                "┃┃┃┃",
-                "┃┗┛┃",
-                ""
-            ]
-            .join("\n")
-        );
+        ),
+        vec![
+            "┃┏━┛",
+            "┃┗━┓",
+            "┗━┓┃",
+            "┏━┛┃",
+            "┗━━┛",
+            "┏┓┏┓",
+            "┃┃┃┃",
+            "┃┗┛┃",
+            "",
+        ]
+    )]
+    fn test_slot_lettering(#[case] slot: Slot, #[case] expected: Vec<&str>) {
+        assert_eq!(slot.to_string(), expected.join("\n"));
     }
 
-    #[test]
-    fn test_slots_lettering() {
-        let keep = SlotsArea::new(
+    #[rstest::rstest]
+    #[case::keep(
+        SlotsArea::new(
             vec![
                 Slot::new(Digit::Two, None),
                 Slot::new(Digit::Zero, None),
@@ -165,24 +158,21 @@ mod tests {
                 Slot::new(Digit::Four, None),
             ],
             SlotsArea::rows_hight(),
-        );
-        assert_eq!(
-            keep.to_string(),
-            vec![
-                "                ",
-                "┏━━┓┏━━┓┏━━┓┏┓┏┓",
-                "┗━┓┃┃┏┓┃┗━┓┃┃┃┃┃",
-                "┏━┛┃┃┃┃┃┏━┛┃┃┗┛┃",
-                "┃┏━┛┃┃┃┃┃┏━┛┗━┓┃",
-                "┃┗━┓┃┗┛┃┃┗━┓  ┃┃",
-                "┗━━┛┗━━┛┗━━┛  ┗┛",
-                "                ",
-                "",
-            ]
-            .join("\n")
-        );
-
-        let away = SlotsArea::new(
+        ),
+        vec![
+            "                ",
+            "┏━━┓┏━━┓┏━━┓┏┓┏┓",
+            "┗━┓┃┃┏┓┃┗━┓┃┃┃┃┃",
+            "┏━┛┃┃┃┃┃┏━┛┃┃┗┛┃",
+            "┃┏━┛┃┃┃┃┃┏━┛┗━┓┃",
+            "┃┗━┓┃┗┛┃┃┗━┓  ┃┃",
+            "┗━━┛┗━━┛┗━━┛  ┗┛",
+            "                ",
+            "",
+        ]
+    )]
+    #[case::away(
+        SlotsArea::new(
             vec![
                 Slot::new(
                     Digit::Two,
@@ -193,21 +183,45 @@ mod tests {
                 Slot::new(Digit::Four, None),
             ],
             SlotsArea::rows_hight(),
-        );
-        assert_eq!(
-            away.to_string(),
+        ),
+        vec![
+            "┏━┛┃            ",
+            "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
+            "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
+            "┗━━┛┃┃┃┃┏━┛┃┃┗┛┃",
+            "┏━━┓┃┃┃┃┃┏━┛┗━┓┃",
+            "┗━┓┃┃┗┛┃┃┗━┓  ┃┃",
+            "┏━┛┃┗━━┛┗━━┛  ┗┛",
+            "┃┏━┛            ",
+            "",
+        ]
+    )]
+    #[case::progress(
+        SlotsArea::new(
             vec![
-                "┏━┛┃            ",
-                "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
-                "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
-                "┗━━┛┃┃┃┃┏━┛┃┃┗┛┃",
-                "┏━━┓┃┃┃┃┃┏━┛┗━┓┃",
-                "┗━┓┃┃┗┛┃┃┗━┓  ┃┃",
-                "┏━┛┃┗━━┛┗━━┛  ┗┛",
-                "┃┏━┛            ",
-                "",
-            ]
-            .join("\n")
-        );
+                Slot::new(
+                    Digit::Two,
+                    Some(Progress::new(Digit::Three, Progress::half_progress()+1)),
+                ),
+                Slot::new(Digit::Zero, None),
+                Slot::new(Digit::Two, None),
+                Slot::new(Digit::Four, None),
+            ],
+            SlotsArea::rows_hight(),
+        ),
+        vec![
+            "┗━┓┃            ",
+            "┏━┛┃┏━━┓┏━━┓┏┓┏┓",
+            "┗━┓┃┃┏┓┃┗━┓┃┃┃┃┃",
+            "┏━┛┃┃┃┃┃┏━┛┃┃┗┛┃",
+            "┗━━┛┃┃┃┃┃┏━┛┗━┓┃",
+            "┏━━┓┃┗┛┃┃┗━┓  ┃┃",
+            "┗━┓┃┗━━┛┗━━┛  ┗┛",
+            "┏━┛┃            ",
+            "",
+        ]
+    )]
+    fn test_slots_lettering(#[case] area: SlotsArea, #[case] expected: Vec<&str>) {
+        assert_eq!(area.to_string(), expected.join("\n"));
     }
 }

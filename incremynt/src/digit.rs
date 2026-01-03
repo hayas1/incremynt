@@ -121,7 +121,6 @@ impl Digit {
     ];
 }
 impl Digit {
-    #[inline]
     pub const fn mod_10(n: usize) -> Self {
         match n % 10 {
             0 => Self::Zero,
@@ -137,7 +136,6 @@ impl Digit {
             _ => unreachable!(),
         }
     }
-    #[inline]
     pub const fn representation(&self) -> &DigitRepresentation {
         match self {
             Self::Space => &Self::SPACE,
@@ -175,43 +173,49 @@ impl Display for Digit {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_digit_from_usize() {
-        assert_eq!(Digit::mod_10(0), Digit::Zero);
-        assert_eq!(Digit::mod_10(1), Digit::One);
-        assert_eq!(Digit::mod_10(2), Digit::Two);
-        assert_eq!(Digit::mod_10(3), Digit::Three);
-        assert_eq!(Digit::mod_10(4), Digit::Four);
-        assert_eq!(Digit::mod_10(5), Digit::Five);
-        assert_eq!(Digit::mod_10(6), Digit::Six);
-        assert_eq!(Digit::mod_10(7), Digit::Seven);
-        assert_eq!(Digit::mod_10(8), Digit::Eight);
-        assert_eq!(Digit::mod_10(9), Digit::Nine);
-
-        assert_eq!(Digit::mod_10(10), Digit::Zero);
-        assert_eq!(Digit::mod_10(11), Digit::One);
-        assert_eq!(Digit::mod_10(12), Digit::Two);
-        assert_eq!(Digit::mod_10(13), Digit::Three);
-        assert_eq!(Digit::mod_10(14), Digit::Four);
-        assert_eq!(Digit::mod_10(15), Digit::Five);
-        assert_eq!(Digit::mod_10(16), Digit::Six);
-        assert_eq!(Digit::mod_10(17), Digit::Seven);
-        assert_eq!(Digit::mod_10(18), Digit::Eight);
-        assert_eq!(Digit::mod_10(19), Digit::Nine);
+    #[rstest::rstest]
+    #[case(0, Digit::Zero)]
+    #[case(1, Digit::One)]
+    #[case(2, Digit::Two)]
+    #[case(3, Digit::Three)]
+    #[case(4, Digit::Four)]
+    #[case(5, Digit::Five)]
+    #[case(6, Digit::Six)]
+    #[case(7, Digit::Seven)]
+    #[case(8, Digit::Eight)]
+    #[case(9, Digit::Nine)]
+    #[case(10, Digit::Zero)]
+    #[case(12, Digit::Two)]
+    #[case(123, Digit::Three)]
+    #[case(1234, Digit::Four)]
+    fn test_digit_from_usize(#[case] n: usize, #[case] expected: Digit) {
+        assert_eq!(Digit::mod_10(n), expected);
     }
 
-    #[test]
-    fn test_digit_lettering() {
-        assert_eq!(
-            Digit::Three.to_string(),
-            indoc::indoc! {"
-                ┏━━┓
-                ┗━┓┃
-                ┏━┛┃
-                ┗━┓┃
-                ┏━┛┃
-                ┗━━┛
-            "}
-        );
+    #[rstest::rstest]
+    #[case(
+        Digit::Three,
+        indoc::indoc! {"
+            ┏━━┓
+            ┗━┓┃
+            ┏━┛┃
+            ┗━┓┃
+            ┏━┛┃
+            ┗━━┛
+        "}
+    )]
+    #[case(
+        Digit::Nine,
+        indoc::indoc! {"
+            ┏━━┓
+            ┃┏┓┃
+            ┃┗┛┃
+            ┗━┓┃
+            ┏━┛┃
+            ┗━━┛
+        "}
+    )]
+    fn test_digit_lettering(#[case] digit: Digit, #[case] expected: &str) {
+        assert_eq!(digit.to_string(), expected);
     }
 }
