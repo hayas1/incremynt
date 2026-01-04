@@ -124,7 +124,7 @@ mod tests {
     #[rstest::rstest]
     #[case::keep(
         Slot::new(Digit::Three, None),
-        vec![
+        &[
             "    ",
             "┏━━┓",
             "┗━┓┃",
@@ -141,7 +141,7 @@ mod tests {
             Digit::Four,
             Some(Progress::new(Digit::Five, Progress::half_progress())),
         ),
-        vec![
+        &[
             "┃┗━┓",
             "┗━┓┃",
             "┏━┛┃",
@@ -158,7 +158,7 @@ mod tests {
             Digit::Four,
             Some(Progress::new(Digit::Five, Progress::half_progress() + 1)),
         ),
-        vec![
+        &[
             "┃┏━┛",
             "┃┗━┓",
             "┗━┓┃",
@@ -170,7 +170,7 @@ mod tests {
             "",
         ]
     )]
-    fn test_slot_lettering(#[case] slot: Slot, #[case] expected: Vec<&str>) {
+    fn test_slot_lettering(#[case] slot: Slot, #[case] expected: &[&str]) {
         assert_eq!(slot.to_string(), expected.join("\n"));
     }
 
@@ -185,7 +185,7 @@ mod tests {
             ],
             SlotsArea::rows_hight(),
         ),
-        vec![
+        &[
             "                ",
             "┏━━┓┏━━┓┏━━┓┏┓┏┓",
             "┗━┓┃┃┏┓┃┗━┓┃┃┃┃┃",
@@ -210,7 +210,7 @@ mod tests {
             ],
             SlotsArea::rows_hight(),
         ),
-        vec![
+        &[
             "┏━┛┃            ",
             "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
             "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
@@ -235,7 +235,7 @@ mod tests {
             ],
             SlotsArea::rows_hight(),
         ),
-        vec![
+        &[
             "┗━┓┃            ",
             "┏━┛┃┏━━┓┏━━┓┏┓┏┓",
             "┗━┓┃┃┏┓┃┗━┓┃┃┃┃┃",
@@ -247,7 +247,7 @@ mod tests {
             "",
         ]
     )]
-    fn test_slots_lettering(#[case] area: SlotsArea, #[case] expected: Vec<&str>) {
+    fn test_slots_lettering(#[case] area: SlotsArea, #[case] expected: &[&str]) {
         assert_eq!(area.to_string(), expected.join("\n"));
     }
 }

@@ -111,7 +111,7 @@ mod tests {
             ],
             SlotsArea::rows_hight(),
         ),
-        vec![
+        &[
             "┏━┛┃\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}\u{3000}",
             "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
             "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
@@ -137,7 +137,7 @@ mod tests {
             ],
             SlotsArea::rows_hight(),
         ),
-        vec![
+        &[
             "┏━┛┃                        ",
             "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
             "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
@@ -153,7 +153,7 @@ mod tests {
         #[case] space: Space,
         #[case] scale: usize,
         #[case] area: SlotsArea,
-        #[case] expected: Vec<&str>,
+        #[case] expected: &[&str],
     ) {
         use std::fmt::Write;
         let mut buf = String::new();

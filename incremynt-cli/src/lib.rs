@@ -81,7 +81,7 @@ mod tests {
         cli.run(&mut buffer).unwrap();
         assert_eq!(
             String::from_utf8_lossy(&buffer),
-            vec![
+            [
                 "┏━┛┃            ",
                 "┗━┓┃┏━━┓┏━━┓┏┓┏┓",
                 "┏━┛┃┃┏┓┃┗━┓┃┃┃┃┃",
