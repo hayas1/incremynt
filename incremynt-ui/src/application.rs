@@ -219,9 +219,9 @@ pub fn progress_form(
             );
         })
     };
-    let progress_onchange = {
+    let progress_oninput = {
         let pane_dispatcher = pane_dispatcher.clone();
-        Callback::from(move |e: Event| {
+        Callback::from(move |e: InputEvent| {
             let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
                 return gloo_console::error!("application dom may be changed");
             };
@@ -240,7 +240,7 @@ pub fn progress_form(
                     <DigitSelect::<_, _> label="next" digit={progress.next.clone()} onchange={next_digit_onchange} />
                 </div>
                 <div class="flex-initial px-4 w-full">
-                    <UsizeInputRange::<_, _> label="progress" value={progress.progress} min=2 max=6 onchange={progress_onchange} />
+                    <UsizeInputRange::<_, _> label="progress" value={progress.progress} min=2 max=6 oninput={progress_oninput} />
                 </div>
             </div>
         </div>
@@ -341,17 +341,17 @@ pub fn usize_input_range<I, O>(
     value: &usize,
     min: &usize,
     max: &usize,
-    onchange: Callback<I, O>,
+    oninput: Callback<I, O>,
 ) -> HtmlResult
 where
-    Callback<I, O>: IntoEventCallback<web_sys::Event>,
+    Callback<I, O>: IntoEventCallback<InputEvent>,
 {
     let input_id = format!("input-int-{}", label);
 
     Ok(html! {
         <div class="flex items-center border-b border-slate-500">
             <label for={input_id.clone()} class="pe-2 text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
-            <input type="range" id={input_id.clone()} value={value.to_string()} min={min.to_string()} max={max.to_string()} onchange={onchange}
+            <input type="range" id={input_id.clone()} value={value.to_string()} min={min.to_string()} max={max.to_string()} oninput={oninput}
                 class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline range-sm cursor-pointer"
             />
