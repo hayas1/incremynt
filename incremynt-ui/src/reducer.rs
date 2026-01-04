@@ -69,8 +69,8 @@ impl Reducible for State<SlotsArea> {
                 area.slots[index].prev = new;
             }
             SlotsAction::AddProgress { index } => {
-                area.slots[index].next =
-                    Some(Progress::new(Digit::Zero, Progress::half_progress()));
+                let new = area.slots[index].prev.increment();
+                area.slots[index].next = Some(Progress::new(new, Progress::half_progress()));
             }
             SlotsAction::UpdateSlotNextDigit { index, new } => match &mut area.slots[index].next {
                 n @ None => *n = Some(Progress::new(new, 0)),

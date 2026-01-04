@@ -136,6 +136,22 @@ impl Digit {
             _ => unreachable!(),
         }
     }
+    pub const fn increment(&self) -> Self {
+        // TODO implement Digit -> usize ?
+        match self {
+            Self::Space => Self::Space,
+            Self::Zero => Self::One,
+            Self::One => Self::Two,
+            Self::Two => Self::Three,
+            Self::Three => Self::Four,
+            Self::Four => Self::Five,
+            Self::Five => Self::Six,
+            Self::Six => Self::Seven,
+            Self::Seven => Self::Eight,
+            Self::Eight => Self::Nine,
+            Self::Nine => Self::Zero,
+        }
+    }
     pub fn digits(mut n: usize) -> Vec<Self> {
         let mut d = Vec::new();
         while n > 0 {
