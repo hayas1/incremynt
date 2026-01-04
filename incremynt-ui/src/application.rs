@@ -1,57 +1,39 @@
-use chrono::{Datelike, Local};
-use incremynt::{increment::Incremynt, interface::Application, space::Width};
+use html::IntoEventCallback;
+use incremynt::{Digit, Progress, Slot, SlotsArea, Space, Spacer};
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 use yew_autoprops::autoprops;
 
-// TODO remove this struct ?
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct Interface {
-    prev: usize,
-    next: usize,
-    space: Width,
-    scale: usize,
-}
-impl From<Interface> for Application<Incremynt> {
-    fn from(interface: Interface) -> Self {
-        Application::<Incremynt> {
-            d: (interface.prev, interface.next).into(),
-            space: interface.space.into(),
-            scale: interface.scale,
-        }
-    }
-}
+use crate::reducer::{Application, SlotsAction, SpacerAction, State};
 
 #[autoprops]
 #[function_component(ApplicationMain)]
 pub fn application_main() -> HtmlResult {
-    let interface = use_state(|| Interface {
-        prev: Local::now().year() as usize,
-        next: Local::now().year() as usize + 1000,
-        space: Width::Half,
-        scale: 1,
-    });
+    let app = use_reducer(|| State(Application::init()));
+    let dispatcher = app.dispatcher();
     Ok(html! {
         <div class="container w-full h-full mx-auto">
-            <ApplicationPane value_handler={interface.clone()} />
-            <ApplicationForm value_handler={interface.clone()} />
+            <ApplicationPane application={app.clone()} />
+            <ApplicationForm application={app.clone()} pane_dispatcher={dispatcher.clone()} />
         </div>
     })
 }
 
 #[autoprops]
 #[function_component(ApplicationPane)]
-pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult {
-    let application: Application<_> = (*value_handler.clone()).clone().into();
+pub fn application_pane(application: &UseReducerHandle<State<Application>>) -> HtmlResult {
+    use std::fmt::Write;
 
-    let mut buf = Vec::new();
-    application
-        .run(&mut buf)
-        .unwrap_or_else(|e| gloo_console::error!(e.to_string()));
-    let show = String::from_utf8_lossy(&buf);
+    let mut buf = String::new();
+    write!(
+        application.0.spacer.clone().fmt_write(&mut buf), // TODO do not clone
+        "{}",
+        application.0.area
+    )
+    .unwrap_or_else(|e| gloo_console::error!(e.to_string()));
 
     let onclick = {
-        let copy = show.to_string();
+        let copy = buf.to_string();
         Callback::from(move |_| {
             let Some(window) = web_sys::window() else {
                 return gloo_console::error!("cannot get window");
@@ -73,7 +55,7 @@ pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult
                     text-slate-700 bg-white dark:text-slate-100 dark:bg-slate-700
                     hover:bg-slate-100 hover:dark:bg-slate-800"
             >
-                <pre class="text-left">{ show }</pre>
+                <pre class="text-left">{ buf }</pre>
             </button>
         </div>
     })
@@ -81,37 +63,15 @@ pub fn application_pane(value_handler: &UseStateHandle<Interface>) -> HtmlResult
 
 #[autoprops]
 #[function_component(ApplicationForm)]
-pub fn application_form(value_handler: &UseStateHandle<Interface>) -> HtmlResult {
-    let initial = &*value_handler.clone();
-    let prev = use_state(|| initial.prev);
-    let next = use_state(|| initial.next);
-    let space = use_state(|| initial.space.clone());
-    let scale = use_state(|| initial.scale);
-    value_handler.set(Interface {
-        prev: *prev,
-        next: *next,
-        space: (&*space).clone(),
-        scale: *scale,
-    });
-    Ok(html! {
-        <div class="flex flex-col">
-            <div class="md:flex justify-center pt-4">
-                <div class="flex-initial px-4 w-full"> <UsizeInput label="prev" value_handler={prev.clone()} /> </div>
-                <div class="flex-initial px-4 w-full"> <UsizeInput label="next" value_handler={next.clone()} /> </div>
-            </div>
-            <div class="md:flex justify-center pt-4">
-                <div class="flex-initial px-4 w-full"> <WidthSelect label="space" value_handler={space.clone()} /> </div>
-                <div class="flex-initial px-4 w-full"> <UsizeInput label="scale" value_handler={scale.clone()} /> </div>
-            </div>
-        </div>
-    })
-}
-
-#[autoprops]
-#[function_component(UsizeInput)]
-pub fn usize_input(label: &String, value_handler: &UseStateHandle<usize>) -> HtmlResult {
-    let onchange = {
-        let value_handler = value_handler.clone();
+pub fn application_form(
+    application: &UseReducerHandle<State<Application>>,
+    pane_dispatcher: &UseReducerDispatcher<State<Application>>,
+) -> HtmlResult {
+    let area = application.0.area.clone();
+    let spacer = application.0.spacer.clone();
+    let scale = application.0.spacer.scale;
+    let scale_onchange = {
+        let pane_dispatcher = pane_dispatcher.clone();
         Callback::from(move |e: Event| {
             let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
                 return gloo_console::error!("application dom may be changed");
@@ -119,29 +79,60 @@ pub fn usize_input(label: &String, value_handler: &UseStateHandle<usize>) -> Htm
             let Ok(value) = input.value().parse() else {
                 return gloo_console::error!("fail to parse value");
             };
-            value_handler.set(value);
+            pane_dispatcher.dispatch(SpacerAction::UpdateScale(value).into());
         })
     };
 
-    let initial = *value_handler.clone();
-    let input_id = format!("input-int-{}", label);
-
     Ok(html! {
-        <div class="flex items-center border-b border-slate-500">
-            <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
-            <input type="number" id={input_id.clone()} value={initial.to_string()} min="0" onchange={onchange}
-                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
-                    focus:outline-none focus:shadow-outline appearance-none"
-            />
+        <div class="flex flex-col">
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full">
+                    <AreaForm area={area.clone()}  pane_dispatcher={pane_dispatcher.clone()} />
+                </div>
+            </div>
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full">
+                    <SpaceSelect label="space" spacer={spacer.clone()} pane_dispatcher={pane_dispatcher.clone()} />
+                </div>
+                <div class="flex-initial px-4 w-full">
+                    <UsizeInput::<_, _> label="scale" value={scale} onchange={scale_onchange} />
+                </div>
+            </div>
         </div>
     })
 }
 
 #[autoprops]
-#[function_component(WidthSelect)]
-pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> HtmlResult {
-    let onchange = {
-        let value_handler = value_handler.clone();
+#[function_component(AreaForm)]
+pub fn slots_form(
+    area: &SlotsArea,
+    pane_dispatcher: &UseReducerDispatcher<State<Application>>,
+) -> HtmlResult {
+    Ok(html! {
+        <div class="flex flex-col">
+            <div class="md:flex justify-center pt-4">
+                {
+                    area.slots.iter().enumerate().map(|(i, s)| {
+                        html! {
+                            <div class="flex-initial px-4 w-full">
+                                <SlotForm index={i} slot={s.clone()} pane_dispatcher={pane_dispatcher.clone()} />
+                            </div>
+                        }
+                    }).collect::<Html>()
+                }
+            </div>
+        </div>
+    })
+}
+#[autoprops]
+#[function_component(SlotForm)]
+pub fn slot_form(
+    index: usize,
+    slot: &Slot,
+    pane_dispatcher: &UseReducerDispatcher<State<Application>>,
+) -> HtmlResult {
+    let prev_digit_onchange = {
+        let pane_dispatcher = pane_dispatcher.clone();
         Callback::from(move |e: Event| {
             let Some(input): Option<HtmlSelectElement> = e.target_dyn_into() else {
                 return gloo_console::error!("application dom may be changed");
@@ -149,15 +140,117 @@ pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> Ht
             let Ok(value) = input.value().parse() else {
                 return gloo_console::error!("fail to parse value");
             };
-            value_handler.set(match value {
-                0 => Width::Full,
-                1 => Width::Half,
-                _ => unreachable!(),
-            });
+            pane_dispatcher.dispatch(
+                SlotsAction::UpdateSlotPrev {
+                    index,
+                    new: if value < 10 {
+                        Digit::mod_10(value)
+                    } else {
+                        unreachable!()
+                    },
+                }
+                .into(),
+            );
+        })
+    };
+    let progress_open = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |_| {
+            pane_dispatcher.dispatch(SlotsAction::AddProgress { index }.into());
+        })
+    };
+    let progress_close = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |_| {
+            pane_dispatcher.dispatch(SlotsAction::RemoveProgress { index }.into());
+        })
+    };
+    Ok(html! {
+        <div class="flex flex-col">
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full">
+                    if let Some(progress) = &slot.next {
+                        <div class="flex justify-start px-4 w-full">
+                            <a href="#" onclick={progress_close}>{"×"}</a>
+                            <ProgressForm index={index} progress={progress.clone()} pane_dispatcher={pane_dispatcher.clone()} />
+                        </div>
+                    } else {
+                        <div class="flex justify-start px-4 w-full">
+                            <a href="#" onclick={progress_open}>{"+"}</a>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full">
+                    <DigitSelect::<_, _> label="prev" digit={slot.prev.clone()} onchange={prev_digit_onchange} />
+                </div>
+            </div>
+        </div>
+    })
+}
+#[autoprops]
+#[function_component(ProgressForm)]
+pub fn progress_form(
+    index: usize,
+    progress: &Progress,
+    pane_dispatcher: &UseReducerDispatcher<State<Application>>,
+) -> HtmlResult {
+    let next_digit_onchange = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |e: Event| {
+            let Some(input): Option<HtmlSelectElement> = e.target_dyn_into() else {
+                return gloo_console::error!("application dom may be changed");
+            };
+            let Ok(value) = input.value().parse() else {
+                return gloo_console::error!("fail to parse value");
+            };
+            pane_dispatcher.dispatch(
+                SlotsAction::UpdateSlotNextDigit {
+                    index,
+                    new: if value < 10 {
+                        Digit::mod_10(value)
+                    } else {
+                        unreachable!()
+                    },
+                }
+                .into(),
+            );
+        })
+    };
+    let progress_oninput = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |e: InputEvent| {
+            let Some(input): Option<HtmlInputElement> = e.target_dyn_into() else {
+                return gloo_console::error!("application dom may be changed");
+            };
+            let Ok(value) = input.value().parse() else {
+                return gloo_console::error!("fail to parse value");
+            };
+            pane_dispatcher
+                .dispatch(SlotsAction::UpdateSlotNextProgress { index, new: value }.into());
         })
     };
 
-    // let initial = *value_handler.clone();
+    Ok(html! {
+        <div class="flex flex-col">
+            <div class="md:flex justify-center pt-4">
+                <div class="flex-initial px-4 w-full">
+                    <DigitSelect::<_, _> label="next" digit={progress.next.clone()} onchange={next_digit_onchange} />
+                </div>
+                <div class="flex-initial px-4 w-full">
+                    <UsizeInputRange::<_, _> label="progress" value={progress.progress} min=2 max=6 oninput={progress_oninput} />
+                </div>
+            </div>
+        </div>
+    })
+}
+#[autoprops]
+#[function_component(DigitSelect)]
+pub fn digit_select<I, O>(label: &String, digit: &Digit, onchange: Callback<I, O>) -> HtmlResult
+where
+    Callback<I, O>: IntoEventCallback<web_sys::Event>,
+{
     let select_id = format!("select-width-{}", label);
 
     Ok(html! {
@@ -167,10 +260,100 @@ pub fn width_select(label: &String, value_handler: &UseStateHandle<Width>) -> Ht
                 class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
                     focus:outline-none focus:shadow-outline appearance-none"
             >
-                // TODO selected
-                <option value="0">{ "full" }</option>
-                <option value="1" selected=true>{ "half" }</option>
+                <option value="0" selected={digit == &Digit::Zero}>{ "0" }</option>
+                <option value="1" selected={digit == &Digit::One}>{ "1" }</option>
+                <option value="2" selected={digit == &Digit::Two}>{ "2" }</option>
+                <option value="3" selected={digit == &Digit::Three}>{ "3" }</option>
+                <option value="4" selected={digit == &Digit::Four}>{ "4" }</option>
+                <option value="5" selected={digit == &Digit::Five}>{ "5" }</option>
+                <option value="6" selected={digit == &Digit::Six}>{ "6" }</option>
+                <option value="7" selected={digit == &Digit::Seven}>{ "7" }</option>
+                <option value="8" selected={digit == &Digit::Eight}>{ "8" }</option>
+                <option value="9" selected={digit == &Digit::Nine}>{ "9" }</option>
             </select>
+        </div>
+    })
+}
+
+#[autoprops]
+#[function_component(SpaceSelect)]
+pub fn space_select(
+    label: &String,
+    spacer: &Spacer,
+    pane_dispatcher: &UseReducerDispatcher<State<Application>>,
+) -> HtmlResult {
+    let onchange = {
+        let pane_dispatcher = pane_dispatcher.clone();
+        Callback::from(move |e: Event| {
+            let Some(input): Option<HtmlSelectElement> = e.target_dyn_into() else {
+                return gloo_console::error!("application dom may be changed");
+            };
+            pane_dispatcher.dispatch(
+                SpacerAction::UpdateSpace(match &input.value()[..] {
+                    "full" => Space::Full,
+                    "half" => Space::Half,
+                    _ => unreachable!(),
+                })
+                .into(),
+            );
+        })
+    };
+
+    let select_id = format!("select-width-{}", label);
+
+    Ok(html! {
+        <div class="flex items-center border-b border-slate-500">
+            <label for={select_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
+            <select id={select_id.clone()} onchange={onchange}
+                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
+                    focus:outline-none focus:shadow-outline appearance-none"
+            >
+                <option value="full" selected={spacer.space == Space::Full}>{ "full" }</option>
+                <option value="half" selected={spacer.space == Space::Half}>{ "half" }</option>
+            </select>
+        </div>
+    })
+}
+
+#[autoprops]
+#[function_component(UsizeInput)]
+pub fn usize_input<I, O>(label: &String, value: &usize, onchange: Callback<I, O>) -> HtmlResult
+where
+    Callback<I, O>: IntoEventCallback<web_sys::Event>,
+{
+    let input_id = format!("input-int-{}", label);
+
+    Ok(html! {
+        <div class="flex items-center border-b border-slate-500">
+            <label for={input_id.clone()} class="text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
+            <input type="number" id={input_id.clone()} value={value.to_string()} min="0" onchange={onchange}
+                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
+                    focus:outline-none focus:shadow-outline appearance-none"
+            />
+        </div>
+    })
+}
+#[autoprops]
+#[function_component(UsizeInputRange)]
+pub fn usize_input_range<I, O>(
+    label: &String,
+    value: &usize,
+    min: &usize,
+    max: &usize,
+    oninput: Callback<I, O>,
+) -> HtmlResult
+where
+    Callback<I, O>: IntoEventCallback<InputEvent>,
+{
+    let input_id = format!("input-int-{}", label);
+
+    Ok(html! {
+        <div class="flex items-center border-b border-slate-500">
+            <label for={input_id.clone()} class="pe-2 text-sm text-right text-slate-500 dark:text-slate-50">{ label }</label>
+            <input type="range" id={input_id.clone()} value={value.to_string()} min={min.to_string()} max={max.to_string()} oninput={oninput}
+                class="border-none rounded-sm bg-transparent w-full text-center text-slate-900 dark:text-slate-50 leading-tight
+                    focus:outline-none focus:shadow-outline range-sm cursor-pointer"
+            />
         </div>
     })
 }
