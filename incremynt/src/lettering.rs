@@ -27,23 +27,26 @@ impl Slot {
         Self { prev, next }
     }
     pub fn row(&self, i: usize, hight: usize) -> &RowRepresentation {
-        if let &Some(Progress { ref next, progress }) = &self.next {
-            if i < progress {
-                &next.bottom(progress)[i]
-            } else if i < hight {
-                &self.prev.top(hight - progress)[i - progress]
-            } else {
-                unreachable!()
+        match self.next {
+            Some(Progress { ref next, progress }) => {
+                if i < progress {
+                    &next.bottom(progress)[i]
+                } else if i < hight {
+                    &self.prev.top(hight - progress)[i - progress]
+                } else {
+                    unreachable!()
+                }
             }
-        } else {
-            if i < (hight - ROWS) / 2 {
-                &Digit::Space.bottom((hight - ROWS) / 2)[i]
-            } else if i < (hight - ROWS) / 2 + ROWS {
-                &self.prev.representation()[i - (hight - ROWS) / 2]
-            } else if i < hight {
-                &Digit::Space.top((hight - ROWS) / 2)[i - (hight - ROWS) / 2 - ROWS]
-            } else {
-                unreachable!()
+            None => {
+                if i < (hight - ROWS) / 2 {
+                    &Digit::Space.bottom((hight - ROWS) / 2)[i]
+                } else if i < (hight - ROWS) / 2 + ROWS {
+                    &self.prev.representation()[i - (hight - ROWS) / 2]
+                } else if i < hight {
+                    &Digit::Space.top((hight - ROWS) / 2)[i - (hight - ROWS) / 2 - ROWS]
+                } else {
+                    unreachable!()
+                }
             }
         }
     }
