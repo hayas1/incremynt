@@ -13,23 +13,22 @@ pub fn application_main() -> HtmlResult {
     let dispatcher = app.dispatcher();
     Ok(html! {
         <div class="container w-full h-full mx-auto">
-            <ApplicationPane value_handler={app.clone()} />
-            <ApplicationForm value_handler={app.clone()} pane_dispatcher={dispatcher.clone()} />
+            <ApplicationPane application={app.clone()} />
+            <ApplicationForm application={app.clone()} pane_dispatcher={dispatcher.clone()} />
         </div>
     })
 }
 
 #[autoprops]
 #[function_component(ApplicationPane)]
-pub fn application_pane(value_handler: &UseReducerHandle<State<Application>>) -> HtmlResult {
+pub fn application_pane(application: &UseReducerHandle<State<Application>>) -> HtmlResult {
     use std::fmt::Write;
-    let application = &(*value_handler.clone()).0;
 
     let mut buf = String::new();
     write!(
-        application.spacer.clone().fmt_write(&mut buf), // TODO do not clone
+        application.0.spacer.clone().fmt_write(&mut buf), // TODO do not clone
         "{}",
-        application.area
+        application.0.area
     )
     .unwrap_or_else(|e| gloo_console::error!(e.to_string()));
 
@@ -65,12 +64,12 @@ pub fn application_pane(value_handler: &UseReducerHandle<State<Application>>) ->
 #[autoprops]
 #[function_component(ApplicationForm)]
 pub fn application_form(
-    value_handler: &UseReducerHandle<State<Application>>,
+    application: &UseReducerHandle<State<Application>>,
     pane_dispatcher: &UseReducerDispatcher<State<Application>>,
 ) -> HtmlResult {
-    let area = value_handler.0.area.clone();
-    let spacer = value_handler.0.spacer.clone();
-    let scale = value_handler.0.spacer.scale;
+    let area = application.0.area.clone();
+    let spacer = application.0.spacer.clone();
+    let scale = application.0.spacer.scale;
     let scale_onchange = {
         let pane_dispatcher = pane_dispatcher.clone();
         Callback::from(move |e: Event| {
@@ -96,7 +95,7 @@ pub fn application_form(
                     <SpaceSelect label="space" spacer={spacer.clone()} pane_dispatcher={pane_dispatcher.clone()} />
                 </div>
                 <div class="flex-initial px-4 w-full">
-                    <UsizeInput::<_, _> label="scale" value={scale.clone()} onchange={scale_onchange} />
+                    <UsizeInput::<_, _> label="scale" value={scale} onchange={scale_onchange} />
                 </div>
             </div>
         </div>
