@@ -9,5 +9,5 @@ license.workspace = true
 [dependencies]
 
 [dev-dependencies]
-indoc = "2.0.7"
-rstest = "0.26.1"
+indoc = "2.0"
+rstest = "0.26"
