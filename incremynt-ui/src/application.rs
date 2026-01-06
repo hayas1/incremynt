@@ -26,7 +26,7 @@ pub fn application_pane(application: &UseReducerHandle<State<Application>>) -> H
 
     let mut buf = String::new();
     write!(
-        application.0.spacer.clone().fmt_write(&mut buf), // TODO do not clone
+        application.0.spacer.fmt_write(&mut buf),
         "{}",
         application.0.area
     )

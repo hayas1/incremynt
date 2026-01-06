@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use crate::{digit::Digit, RowRepresentation, ROWS};
+use crate::{ROWS, RowRepresentation, digit::Digit};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
 pub struct Progress {
@@ -12,7 +12,6 @@ impl Progress {
         (ROWS + 2) / 2
     }
     pub fn new(next: Digit, progress: usize) -> Self {
-        // TODO validate
         Self { next, progress }
     }
 }

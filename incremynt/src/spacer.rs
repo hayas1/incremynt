@@ -32,13 +32,13 @@ impl Spacer {
             &self.space.to_string().repeat(self.scale),
         )
     }
-    pub fn fmt_write<W>(self, writer: W) -> FmtSpacer<W> {
+    pub fn fmt_write<W>(&self, writer: W) -> FmtSpacer<'_, W> {
         FmtSpacer {
             writer,
             spacer: self,
         }
     }
-    pub fn io_write<W>(self, writer: W) -> IoSpacer<W> {
+    pub fn io_write<W>(&self, writer: W) -> IoSpacer<'_, W> {
         IoSpacer {
             writer,
             spacer: self,
@@ -46,17 +46,17 @@ impl Spacer {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct FmtSpacer<W> {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct FmtSpacer<'a, W> {
     writer: W,
-    spacer: Spacer,
+    spacer: &'a Spacer,
 }
-impl<W> FmtSpacer<W> {
+impl<W> FmtSpacer<'_, W> {
     pub fn write(&self) -> &W {
         &self.writer
     }
 }
-impl<W> std::fmt::Write for FmtSpacer<W>
+impl<W> std::fmt::Write for FmtSpacer<'_, W>
 where
     W: std::fmt::Write,
 {
@@ -64,17 +64,17 @@ where
         write!(self.writer, "{}", self.spacer.scaled(s))
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
-pub struct IoSpacer<W> {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct IoSpacer<'a, W> {
     writer: W,
-    spacer: Spacer,
+    spacer: &'a Spacer,
 }
-impl<W> IoSpacer<W> {
+impl<W> IoSpacer<'_, W> {
     pub fn write(&self) -> &W {
         &self.writer
     }
 }
-impl<W> std::fmt::Write for IoSpacer<W>
+impl<W> std::fmt::Write for IoSpacer<'_, W>
 where
     W: std::io::Write,
 {

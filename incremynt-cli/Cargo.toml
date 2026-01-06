@@ -9,6 +9,6 @@ license.workspace = true
 [dependencies]
 incremynt = { path = "../incremynt" }
 
-anyhow = "1.0.95"
-chrono = "0.4.39"
-clap = { version = "4.5.23", features = ["derive"] }
+anyhow = "1.0"
+chrono = "0.4"
+clap = { version = "4.5.54", features = ["derive"] }
